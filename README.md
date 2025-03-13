@@ -1,1 +1,3 @@
-# Hammer_project
+# Game poulpe
+
+Bon j'utilise ce nom pour l'instant mais ça a vocation à changer, quand je trouverais un nom potable. Pour l'instant y'a pas grand chose mais je viens de commencer aussi...
