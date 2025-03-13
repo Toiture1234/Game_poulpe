@@ -11,10 +11,14 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	initShaders();
 	initRenderTexContext();
 
+	first.setPtrs(&textureAtlas.at(0), &textureAtlas.at(0), &textureAtlas.at(0));
+
 	std::cout << "Game initialisation done !!\n";
 }
 void game::gameClass::initTextures() {
 	// load every texture and push back to vector
+	sf::Texture tmp("assets/textures/null.png");
+	textureAtlas.push_back(tmp);
 }
 void game::gameClass::initShaders() {
 
@@ -37,7 +41,7 @@ void game::gameClass::onUpdate() {
 	// game logic
 	
 	// drawing to render texture
-	gameRenderTexture.draw(test);
+	gameRenderTexture.draw(first.objSprite);
 	std::cout << "Game updated !!\n";
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {

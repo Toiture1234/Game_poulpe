@@ -5,13 +5,15 @@
 #include <string>
 #include <vector>
 
+#include "objects/object.hpp"
+
 namespace game {
 	class gameClass {
 	private :
 		// objects vector
 		std::vector<sf::Texture> textureAtlas;
 		std::vector<sf::Shader> shaderAtlas;
-		sf::RectangleShape test = sf::RectangleShape({100,100});
+		object_t first;
 
 		bool isOnPause;
 
@@ -40,7 +42,6 @@ namespace game {
 			view_height = 300;
 			view_posX = view_posY = 0;
 			windowH_ptr = windowW_ptr = nullptr;
-			test.setFillColor(sf::Color::Red);
 		}
 
 		void init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigned int* wH);
