@@ -7,7 +7,7 @@
 
 int main()
 {
-    game::app mainApp(300, 300, std::string("Hello"));
+    game::app mainApp(1280, 720, std::string("Hello"));
 
     mainApp.init();
     mainApp.run();

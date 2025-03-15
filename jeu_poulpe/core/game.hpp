@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "objects/object.hpp"
+#include "objects/playable.hpp"
 
 namespace game {
 	class gameClass {
@@ -13,7 +14,10 @@ namespace game {
 		// objects vector
 		std::vector<sf::Texture> textureAtlas;
 		std::vector<sf::Shader> shaderAtlas;
-		object_t first;
+		std::vector<object> objectAtlas;
+
+		// player def
+		playable player;
 
 		bool isOnPause;
 
@@ -38,8 +42,8 @@ namespace game {
 		gameClass() {
 			isOnPause = false;
 			deltaT_ptr = runT_ptr = nullptr;
-			view_width = 300;
-			view_height = 300;
+			view_width = 1280;
+			view_height = 720;
 			view_posX = view_posY = 0;
 			windowH_ptr = windowW_ptr = nullptr;
 		}

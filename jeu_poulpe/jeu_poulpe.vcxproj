@@ -146,12 +146,15 @@
     <ClCompile Include="core\app_handler.cpp" />
     <ClCompile Include="core\game.cpp" />
     <ClCompile Include="core\objects\object.cpp" />
+    <ClCompile Include="core\objects\playable.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\app_handler.hpp" />
+    <ClInclude Include="core\constants.hpp" />
     <ClInclude Include="core\game.hpp" />
     <ClInclude Include="core\objects\object.hpp" />
+    <ClInclude Include="core\objects\playable.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

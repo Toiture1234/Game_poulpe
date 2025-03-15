@@ -10,8 +10,16 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	initTextures();
 	initShaders();
 	initRenderTexContext();
+	
+	// init player
+	player.setTextures(&textureAtlas.at(1), &textureAtlas.at(0), &textureAtlas.at(0));
+	player.canMove = true;
 
-	first.setPtrs(&textureAtlas.at(0), &textureAtlas.at(0), &textureAtlas.at(0));
+	// init objects
+	objectAtlas.push_back(object(&textureAtlas.at(0), &textureAtlas.at(0), &textureAtlas.at(0)));
+	objectAtlas.at(0).setPosition(sf::Vector2f(50.f, 0.f));
+	objectAtlas.at(0).setTextures(&textureAtlas.at(0), &textureAtlas.at(0), &textureAtlas.at(0));
+	objectAtlas.push_back(object(&textureAtlas.at(2), &textureAtlas.at(0), &textureAtlas.at(0)));
 
 	std::cout << "Game initialisation done !!\n";
 }
@@ -19,6 +27,8 @@ void game::gameClass::initTextures() {
 	// load every texture and push back to vector
 	sf::Texture tmp("assets/textures/null.png");
 	textureAtlas.push_back(tmp);
+	textureAtlas.push_back(sf::Texture("assets/textures/nullw.png"));
+	textureAtlas.push_back(sf::Texture("assets/textures/background.png"));
 }
 void game::gameClass::initShaders() {
 
@@ -39,9 +49,16 @@ void game::gameClass::onUpdate() {
 	// keep track of user input
 	
 	// game logic
+	player.move(*deltaT_ptr);
 	
 	// drawing to render texture
-	gameRenderTexture.draw(first.objSprite);
+	// this would use a loop soon so I have to take care I which order I put my objects
+	// maybe I can make separated vectors for differents planes
+	objectAtlas.at(1).draw(&gameRenderTexture, nullptr);
+	//objectAtlas.at(0).draw(&gameRenderTexture, nullptr);
+
+	player.draw(&gameRenderTexture, nullptr);
+	
 	std::cout << "Game updated !!\n";
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {
