@@ -8,7 +8,7 @@ void game::playable::move(float delta_time) {
 	// in m.s^(-2)
 	sf::Vector2f baseAcceleration = applyGravity ? sf::Vector2f(0.f, 9.81f) : sf::Vector2f(0.f, 0.f); 
 
-	// friction force in air, using snell's law, this is theorically incorect but this is a game
+	// friction force in air, using stoke's law, this is theorically incorect but this is a game
 	// this means F = -6*pi*airViscosity*radius*velocity
 	// this almost does nothing but who cares
 	// TODO : have multiple frictions forces (for floor, etc)
@@ -30,6 +30,10 @@ void game::playable::move(float delta_time) {
 		}
 	}
 
+	// convert from pixels to meters, we consider that one pixel is equal to 1/32 meters
+	baseAcceleration.x *= 32;
+	baseAcceleration.y *= 32;
+	
 	// calculations
 	velocity += baseAcceleration * delta_time; // this gives m.s^(-1)
 	position += velocity * delta_time; // this gives m
