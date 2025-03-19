@@ -10,17 +10,15 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	initTextures();
 	initShaders();
 	initRenderTexContext();
-	
-	// init player
-	player.setTextures(&textureAtlas.at(1), &textureAtlas.at(0), &textureAtlas.at(0));
-	player.canMove = true;
 
 	// init objects
-	objectAtlas.push_back(object(&textureAtlas.at(0), &textureAtlas.at(0), &textureAtlas.at(0)));
-	objectAtlas.at(0).setPosition(sf::Vector2f(50.f, 0.f));
-	objectAtlas.at(0).setTextures(&textureAtlas.at(0), &textureAtlas.at(0), &textureAtlas.at(0));
+	objectAtlas.push_back(object(&textureAtlas.at(1), &textureAtlas.at(0), &textureAtlas.at(0)));
+	objectAtlas.at(0).setPosition(sf::Vector2f(0, 50));
 	objectAtlas.push_back(object(&textureAtlas.at(2), &textureAtlas.at(0), &textureAtlas.at(0)));
 
+	// init player better this way so the player is not dependent to an object
+	player = playable(&textureAtlas.at(1), &textureAtlas.at(0), &textureAtlas.at(0));
+	player.canMove = true;
 	std::cout << "Game initialisation done !!\n";
 }
 void game::gameClass::initTextures() {

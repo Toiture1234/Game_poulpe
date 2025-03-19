@@ -21,5 +21,7 @@ namespace game {
 		void draw(sf::RenderTexture* renderTex, sf::Shader* shaderUsed);
 		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr, sf::Texture* rough_ptr);
 		void setPosition(sf::Vector2f position);
+
+		sf::Vector2f getPosition() const { return albedoSP.getPosition(); }
 	};
 };

@@ -9,11 +9,8 @@
 namespace game {
 	class playable {
 	private:
-		// temporary texture just for initialisation, 
-		// it has to be placed before the object idk why
-		// we should avoid loading the texture in the class but there's only one player, so other stuff would use std::vector
-		sf::Texture tmpTexture;
-		object objRef;
+		// reference to drawable object
+		object* objRef;
 
 		// moving related stuff
 		// player's velocity
@@ -32,19 +29,20 @@ namespace game {
 		bool applyGravity;
 
 		// this constructor allows to declare a playable object without already knowing it's textures
-		playable() : tmpTexture("assets/textures/null.png"), objRef(&tmpTexture, &tmpTexture, &tmpTexture) {
+		playable() {
 			canMove = false;
 			applyGravity = false;
 		}
 		// same for this one
-		playable(bool isMoving, bool apply_gravity) : tmpTexture("assets/textures/null.png"), objRef(&tmpTexture, &tmpTexture, &tmpTexture) {
+		playable(bool isMoving, bool apply_gravity)  {
 			canMove = isMoving;
 			applyGravity = apply_gravity;
 		}
 		// use this one if you already have the textures
-		playable(sf::Texture* albedo_ptr, sf::Texture* normal_ptr, sf::Texture* rough_ptr) : objRef(albedo_ptr, normal_ptr, rough_ptr) {
+		playable(sf::Texture* albedo, sf::Texture* normal, sf::Texture* rough){
 			canMove = false;
 			applyGravity = false;
+			objRef = new object(albedo, normal, rough);
 		}
 
 		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr, sf::Texture* rough_ptr);
