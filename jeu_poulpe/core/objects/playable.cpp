@@ -30,10 +30,6 @@ void game::playable::move(float delta_time) {
 		}
 	}
 
-	// conversion from pixels.m^(-2) to m.s^(-2)
-	baseAcceleration.x *= 32.f;
-	baseAcceleration.y *= 32.f;
-
 	// calculations
 	velocity += baseAcceleration * delta_time; // this gives m.s^(-1)
 	position += velocity * delta_time; // this gives m
@@ -41,5 +37,5 @@ void game::playable::move(float delta_time) {
 	objRef->setPosition(position);
 }
 void game::playable::draw(sf::RenderTexture* renderTex, sf::Shader* shader) {
-	objRef->draw(renderTex, shader);
+	objRef.draw(renderTex, shader);
 }
