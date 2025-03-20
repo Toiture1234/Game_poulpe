@@ -7,6 +7,7 @@
 
 #include "objects/object.hpp"
 #include "objects/playable.hpp"
+#include "follow_view.hpp"
 
 namespace game {
 	class gameClass {
@@ -34,7 +35,7 @@ namespace game {
 		unsigned int view_height;
 		unsigned int view_posX;
 		unsigned int view_posY;
-		sf::View worldView;
+		followView worldView;
 
 		// rendering, the game renders on a virtual screen that would later be displayed on window
 		sf::RenderTexture gameRenderTexture;
@@ -42,10 +43,11 @@ namespace game {
 		gameClass() {
 			isOnPause = false;
 			deltaT_ptr = runT_ptr = nullptr;
-			view_width = 1280;
-			view_height = 720;
+			view_width = 320;
+			view_height = 180;
 			view_posX = view_posY = 0;
 			windowH_ptr = windowW_ptr = nullptr;
+			worldView.view = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
 		}
 
 		void init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigned int* wH);

@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="core\app_handler.cpp" />
+    <ClCompile Include="core\follow_view.cpp" />
     <ClCompile Include="core\game.cpp" />
     <ClCompile Include="core\objects\object.cpp" />
     <ClCompile Include="core\objects\playable.cpp" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="core\app_handler.hpp" />
     <ClInclude Include="core\constants.hpp" />
+    <ClInclude Include="core\follow_view.hpp" />
     <ClInclude Include="core\game.hpp" />
     <ClInclude Include="core\objects\object.hpp" />
     <ClInclude Include="core\objects\playable.hpp" />

@@ -5,7 +5,7 @@ void game::playable::setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_pt
 }
 void game::playable::move(float delta_time) {
 	// derived from the Newton's second law
-	// in m.s^(-2)
+	// in px.s^(-2)
 	sf::Vector2f baseAcceleration = applyGravity ? sf::Vector2f(0.f, 9.81f) : sf::Vector2f(0.f, 0.f); 
 
 	// friction force in air, using stokes's law, this is theorically incorect but this is a game
@@ -30,6 +30,10 @@ void game::playable::move(float delta_time) {
 		}
 	}
 
+	// converion to m.s^(-2)
+	baseAcceleration.x *= 32.f;
+	baseAcceleration.y *= 32.f;
+
 	// calculations
 	velocity += baseAcceleration * delta_time; // this gives m.s^(-1)
 	position += velocity * delta_time; // this gives m
@@ -37,5 +41,5 @@ void game::playable::move(float delta_time) {
 	objRef->setPosition(position);
 }
 void game::playable::draw(sf::RenderTexture* renderTex, sf::Shader* shader) {
-	objRef.draw(renderTex, shader);
+	objRef->draw(renderTex, shader);
 }

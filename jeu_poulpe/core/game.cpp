@@ -19,6 +19,9 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	// init player better this way so the player is not dependent to an object
 	player = playable(&textureAtlas.at(1), &textureAtlas.at(0), &textureAtlas.at(0));
 	player.canMove = true;
+
+	// init view ptr
+	worldView.setPtr(player.getPosition_ptr());
 	std::cout << "Game initialisation done !!\n";
 }
 void game::gameClass::initTextures() {
@@ -36,8 +39,8 @@ void game::gameClass::initRenderTexContext() {
 		std::cout << "Failed to resize renderTex !!\n"; // a bit of debugging :)
 	}
 	// view is currently positionned using left-up, idk if I'll change this later
-	worldView = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
-	gameRenderTexture.setView(worldView);
+	//worldView = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
+	gameRenderTexture.setView(worldView.view);
 }
 
 // this function will become really big I guess
@@ -48,6 +51,9 @@ void game::gameClass::onUpdate() {
 	
 	// game logic
 	player.move(*deltaT_ptr);
+
+	// update view
+	worldView.onUpdate(&gameRenderTexture);
 	
 	// drawing to render texture
 	// this would use a loop soon so I have to take care I which order I put my objects
@@ -56,8 +62,6 @@ void game::gameClass::onUpdate() {
 	//objectAtlas.at(0).draw(&gameRenderTexture, nullptr);
 
 	player.draw(&gameRenderTexture, nullptr);
-	
-	std::cout << "Game updated !!\n";
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {
 	gameRenderTexture.display();

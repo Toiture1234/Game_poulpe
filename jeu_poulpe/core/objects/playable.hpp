@@ -32,11 +32,13 @@ namespace game {
 		playable() {
 			canMove = false;
 			applyGravity = false;
+			objRef = nullptr;
 		}
 		// same for this one
 		playable(bool isMoving, bool apply_gravity)  {
 			canMove = isMoving;
 			applyGravity = apply_gravity;
+			objRef = nullptr;
 		}
 		// use this one if you already have the textures
 		playable(sf::Texture* albedo, sf::Texture* normal, sf::Texture* rough){
@@ -49,6 +51,6 @@ namespace game {
 		void move(float delta_time);
 		void draw(sf::RenderTexture* renderTex, sf::Shader* shader);
 
-		
+		sf::Vector2f* getPosition_ptr() const { return (sf::Vector2f*)&position; };
 	};
 }
