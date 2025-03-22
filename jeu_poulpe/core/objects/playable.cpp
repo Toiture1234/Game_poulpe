@@ -1,7 +1,7 @@
 #include "playable.hpp"
 
-void game::playable::setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr, sf::Texture* rough_ptr) {
-	objRef->setTextures(albedo_ptr, normal_ptr, rough_ptr);
+void game::playable::setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr) {
+	objRef->setTextures(albedo_ptr, normal_ptr);
 }
 void game::playable::move(float delta_time) {
 	// derived from the Newton's second law

@@ -20,7 +20,6 @@ namespace game {
 
 		// physical constants
 		// hardcoded now but this is maybe planned to change
-		
 		// player's mass in kg
 		float mass = 1.f;
 
@@ -41,13 +40,13 @@ namespace game {
 			objRef = nullptr;
 		}
 		// use this one if you already have the textures
-		playable(sf::Texture* albedo, sf::Texture* normal, sf::Texture* rough){
+		playable(sf::Texture* albedo, sf::Texture* normal){
 			canMove = false;
 			applyGravity = false;
-			objRef = new object(albedo, normal, rough);
+			objRef = new object(albedo, normal);
 		}
 
-		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr, sf::Texture* rough_ptr);
+		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr);
 		void move(float delta_time);
 		void draw(sf::RenderTexture* renderTex, sf::Shader* shader);
 

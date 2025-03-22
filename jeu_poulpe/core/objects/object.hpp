@@ -8,18 +8,21 @@ namespace game {
 	private :
 		sf::Sprite albedoSP;
 		sf::Sprite normalSP;
-		sf::Sprite roughSP;
+
+		// pbr variables
+		float roughness;
 
 		bool colideable;
 	public:
-		object(sf::Texture* albedo_ptr, sf::Texture* normal_ptr, sf::Texture* rough_ptr) : 
-			albedoSP(*albedo_ptr), normalSP(*normal_ptr), roughSP(*rough_ptr) 
+		object(sf::Texture* albedo_ptr, sf::Texture* normal_ptr) : 
+			albedoSP(*albedo_ptr), normalSP(*normal_ptr)
 		{
 			colideable = false;
+			roughness = 1.f;
 		}
 
 		void draw(sf::RenderTexture* renderTex, sf::Shader* shaderUsed);
-		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr, sf::Texture* rough_ptr);
+		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr);
 		void setPosition(sf::Vector2f position);
 
 		sf::Vector2f getPosition() const { return albedoSP.getPosition(); }

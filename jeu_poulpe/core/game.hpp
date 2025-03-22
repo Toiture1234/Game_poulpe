@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "objects/object.hpp"
+#include "tilemap/tilemap.hpp"
 #include "objects/playable.hpp"
 #include "follow_view.hpp"
 
@@ -20,9 +21,12 @@ namespace game {
 		// player def
 		playable player;
 
+		// tilemap
+		tileMap worldTilemap;
+
 		bool isOnPause;
 
-		// pointers to time variables refered in the app, this gives global time to game
+		// pointers to time variables refered in the app, this gives global time to game without need to refresh it on every frame
 		float* deltaT_ptr;
 		float* runT_ptr;
 
@@ -30,11 +34,13 @@ namespace game {
 		unsigned int* windowW_ptr;
 		unsigned int* windowH_ptr;
 
-		// view
+		// view parameters
 		unsigned int view_width;
 		unsigned int view_height;
 		unsigned int view_posX;
 		unsigned int view_posY;
+
+		// follower view on player
 		followView worldView;
 
 		// rendering, the game renders on a virtual screen that would later be displayed on window

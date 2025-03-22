@@ -12,16 +12,19 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	initRenderTexContext();
 
 	// init objects
-	objectAtlas.push_back(object(&textureAtlas.at(1), &textureAtlas.at(0), &textureAtlas.at(0)));
+	objectAtlas.push_back(object(&textureAtlas.at(1), &textureAtlas.at(0)));
 	objectAtlas.at(0).setPosition(sf::Vector2f(0, 50));
-	objectAtlas.push_back(object(&textureAtlas.at(2), &textureAtlas.at(0), &textureAtlas.at(0)));
+	objectAtlas.push_back(object(&textureAtlas.at(2), &textureAtlas.at(0)));
 
 	// init player better this way so the player is not dependent to an object
-	player = playable(&textureAtlas.at(1), &textureAtlas.at(0), &textureAtlas.at(0));
+	player = playable(&textureAtlas.at(1), &textureAtlas.at(0));
 	player.canMove = true;
 
 	// init view ptr
 	worldView.setPtr(player.getPosition_ptr());
+
+	// init tilemap
+	worldTilemap.loadtilemap("assets/textures/tilemap/test_tilemap.png");
 	std::cout << "Game initialisation done !!\n";
 }
 void game::gameClass::initTextures() {
@@ -58,8 +61,10 @@ void game::gameClass::onUpdate() {
 	// drawing to render texture
 	// this would use a loop soon so I have to take care I which order I put my objects
 	// maybe I can make separated vectors for differents planes
-	objectAtlas.at(1).draw(&gameRenderTexture, nullptr);
+	//objectAtlas.at(1).draw(&gameRenderTexture, nullptr);
 	//objectAtlas.at(0).draw(&gameRenderTexture, nullptr);
+
+	worldTilemap.drawTilemap(&gameRenderTexture);
 
 	player.draw(&gameRenderTexture, nullptr);
 }
