@@ -9,11 +9,13 @@ namespace game {
 		sf::Sprite albedoSP;
 		sf::Sprite normalSP;
 
-		// pbr variables
-		float roughness;
+		
 
 		bool colideable;
 	public:
+		// pbr variables, public for ease of access
+		float roughness;
+
 		object(sf::Texture* albedo_ptr, sf::Texture* normal_ptr) : 
 			albedoSP(*albedo_ptr), normalSP(*normal_ptr)
 		{

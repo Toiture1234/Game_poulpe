@@ -17,16 +17,16 @@ void game::playable::move(float delta_time) {
 	// key inputs
 	if (canMove) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
-			baseAcceleration.y += -30.f;
+			baseAcceleration.y += -10.f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-			baseAcceleration.y += 30.f;
+			baseAcceleration.y += 10.f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-			baseAcceleration.x += 30.f;
+			baseAcceleration.x += 10.f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-			baseAcceleration.x -= 30.f;
+			baseAcceleration.x -= 10.f;
 		}
 	}
 

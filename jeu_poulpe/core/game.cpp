@@ -54,6 +54,15 @@ void game::gameClass::onUpdate() {
 	
 	// game logic
 	player.move(*deltaT_ptr);
+	// intersection test
+	sf::CircleShape pointLit(1.f);
+	sf::Vector2f playerPos = player.getPosition();
+	sf::Vector2f velocity = player.getVelocity();
+	if (velocity.length() > 0.f) velocity = velocity.normalized();
+	float t = worldTilemap.intersect(playerPos, velocity);
+	pointLit.setPosition(playerPos + velocity * t);
+	pointLit.setFillColor(sf::Color::Red);
+	if (worldTilemap.readTile(playerPos) == 0) std::cout << "LETS GO\n";
 
 	// update view
 	worldView.onUpdate(&gameRenderTexture);
@@ -67,6 +76,7 @@ void game::gameClass::onUpdate() {
 	worldTilemap.drawTilemap(&gameRenderTexture);
 
 	player.draw(&gameRenderTexture, nullptr);
+	gameRenderTexture.draw(pointLit);
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {
 	gameRenderTexture.display();

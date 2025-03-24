@@ -8,37 +8,29 @@
 #include "../objects/object.hpp"
 
 #define READ_FROM_IMAGE 1
+#define MAX_STEPS 50
+#define EPSILON 0.05f
 
 namespace game {
 
 	// enum for every possible tile configuration, 16 now but will probably grow (up to 255 max), so I should probably put this to another file
 	enum tilesIndex
 	{
-		// terrain (aka rocks), have to make variants so maybe rename everything
-		UP = 0,
-		DOWN = 1,
-		LEFT = 2,
-		RIGHT = 3,
-		UP_LEFT = 4,
-		UP_RIGHT = 5,
-		DOWN_LEFT = 6,
-		DOWN_RIGHT = 7,
-		UP_DOWN = 8,
-		LEFT_RIGHT = 9,
-		LEFT_UP_RIGHT = 10,
-		LEFT_DOWN_RIGHT = 11,
-		UP_LEFT_DOWN = 12,
-		UP_RIGHT_DOWN = 13,
-		ALL_SIDES = 14,
-		NO_SIDES = 16
+		// different materials
+		// natural things
+		AIR = 0,
+		ROCK,
+		GRASS,
 
-		// objects
+		// artificial things
+		WOOD
 	};
 
 	// small utility class to easily use tilemaps
 	class tileSet {
 	private:
-		// object used for drawing
+		// object used for drawing,
+		// it saves the texture used for drawing
 		object* objRef;
 	public:
 		tileSet() {
@@ -73,5 +65,7 @@ namespace game {
 		void drawTilemap(sf::RenderTexture* renderTex);
 
 		int readTile(sf::Vector2f pos) const;
+
+		float intersect(sf::Vector2f pos, sf::Vector2f normDir);
 	};
 }

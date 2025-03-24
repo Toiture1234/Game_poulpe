@@ -51,5 +51,7 @@ namespace game {
 		void draw(sf::RenderTexture* renderTex, sf::Shader* shader);
 
 		sf::Vector2f* getPosition_ptr() const { return (sf::Vector2f*)&position; };
+		sf::Vector2f getVelocity() const { return velocity; };
+		sf::Vector2f getPosition() const { return position; };
 	};
 }
