@@ -5,6 +5,7 @@
 
 #include "../constants.hpp"
 #include "object.hpp"
+#include "../tilemap/tilemap.hpp"
 
 namespace game {
 	class playable {
@@ -12,20 +13,20 @@ namespace game {
 		// reference to drawable object
 		object* objRef;
 
-		// moving related stuff
-		// player's velocity
-		sf::Vector2f velocity;
-		// player's position
-		sf::Vector2f position;
-
 		// physical constants
 		// hardcoded now but this is maybe planned to change
 		// player's mass in kg
 		float mass = 1.f;
 
+		sf::Vector2f lastNormal;
 	public:
 		bool canMove;
 		bool applyGravity;
+		// moving related stuff
+		// player's velocity
+		sf::Vector2f velocity;
+		// player's position
+		sf::Vector2f position;
 
 		// this constructor allows to declare a playable object without already knowing it's textures
 		playable() {
@@ -47,7 +48,7 @@ namespace game {
 		}
 
 		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr);
-		void move(float delta_time);
+		void move(float delta_time, tileMap& refTileMap);
 		void draw(sf::RenderTexture* renderTex, sf::Shader* shader);
 
 		sf::Vector2f* getPosition_ptr() const { return (sf::Vector2f*)&position; };

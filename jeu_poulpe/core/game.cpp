@@ -17,8 +17,9 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	objectAtlas.push_back(object(&textureAtlas.at(2), &textureAtlas.at(0)));
 
 	// init player better this way so the player is not dependent to an object
-	player = playable(&textureAtlas.at(1), &textureAtlas.at(0));
+	player = playable(&textureAtlas.at(0), &textureAtlas.at(0));
 	player.canMove = true;
+	player.position = sf::Vector2f(48.f, 48.f);
 
 	// init view ptr
 	worldView.setPtr(player.getPosition_ptr());
@@ -53,16 +54,7 @@ void game::gameClass::onUpdate() {
 	// keep track of user input
 	
 	// game logic
-	player.move(*deltaT_ptr);
-	// intersection test
-	sf::CircleShape pointLit(1.f);
-	sf::Vector2f playerPos = player.getPosition();
-	sf::Vector2f velocity = player.getVelocity();
-	if (velocity.length() > 0.f) velocity = velocity.normalized();
-	float t = worldTilemap.intersect(playerPos, velocity);
-	pointLit.setPosition(playerPos + velocity * t);
-	pointLit.setFillColor(sf::Color::Red);
-	if (worldTilemap.readTile(playerPos) == 0) std::cout << "LETS GO\n";
+	player.move(*deltaT_ptr, worldTilemap);
 
 	// update view
 	worldView.onUpdate(&gameRenderTexture);
@@ -76,7 +68,6 @@ void game::gameClass::onUpdate() {
 	worldTilemap.drawTilemap(&gameRenderTexture);
 
 	player.draw(&gameRenderTexture, nullptr);
-	gameRenderTexture.draw(pointLit);
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {
 	gameRenderTexture.display();

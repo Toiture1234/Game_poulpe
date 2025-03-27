@@ -9,7 +9,7 @@
 
 #define READ_FROM_IMAGE 1
 #define MAX_STEPS 50
-#define EPSILON 0.05f
+#define EPSILON 0.5f
 
 namespace game {
 
@@ -66,6 +66,6 @@ namespace game {
 
 		int readTile(sf::Vector2f pos) const;
 
-		float intersect(sf::Vector2f pos, sf::Vector2f normDir);
+		float intersect(sf::Vector2f pos, sf::Vector2f normDir, sf::Vector2f& normal);
 	};
 }

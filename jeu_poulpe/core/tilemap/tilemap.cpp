@@ -37,15 +37,17 @@ void game::tileMap::drawTilemap(sf::RenderTexture* renderTex) {
 }
 
 // intersection, returns the minimal value from the position to the tilemap
-float game::tileMap::intersect(sf::Vector2f pos, sf::Vector2f normDir) {
+float game::tileMap::intersect(sf::Vector2f pos, sf::Vector2f normDir, sf::Vector2f& normal) {
 	// returned distance
 	float t = 0;
-
+    
 	bool signX = normDir.x >= 0.f;
 	bool signY = normDir.y >= 0.f;
 
 	sf::Vector2f pos0 = pos;
+	normal = sf::Vector2f(0.f, 0.f);
 	for (int i = 0; i < MAX_STEPS; i++) {
+		// break after normal calculations
 		int tileIdx = readTile(pos);
 		if (tileIdx <= 10) break;
 
@@ -58,8 +60,11 @@ float game::tileMap::intersect(sf::Vector2f pos, sf::Vector2f normDir) {
 		float tY = fabsf(deltaY / normDir.y);
 
 		bool isX = fminf(tX, tY) == tX;
-		t += fminf(tX, tY) + EPSILON * (isX ? !signX : !signY);
+		normal = isX ? sf::Vector2f(-1.f, 0.f) * (normDir.x >= 0.f ? 1.f : -1.f) : sf::Vector2f(0.f, -1.f) * (normDir.y >= 0.f ? 1.f : -1.f);
+
+		t += fminf(tX, tY) + EPSILON;
 		pos = pos0 + normDir * t;
 	}
 	return t;
+	
 }
