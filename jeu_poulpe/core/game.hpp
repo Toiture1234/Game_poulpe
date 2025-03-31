@@ -41,7 +41,7 @@ namespace game {
 		unsigned int view_posY;
 
 		// follower view on player
-		followView worldView;
+		sf::View worldView;
 
 		// rendering, the game renders on a virtual screen that would later be displayed on window
 		sf::RenderTexture gameRenderTexture;
@@ -53,7 +53,7 @@ namespace game {
 			view_height = 180;
 			view_posX = view_posY = 0;
 			windowH_ptr = windowW_ptr = nullptr;
-			worldView.view = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
+			worldView = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
 		}
 
 		void init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigned int* wH);

@@ -19,10 +19,11 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	// init player better this way so the player is not dependent to an object
 	player = playable(&textureAtlas.at(0), &textureAtlas.at(0));
 	player.canMove = true;
+	player.applyGravity = true;
 	player.position = sf::Vector2f(48.f, 48.f);
 
 	// init view ptr
-	worldView.setPtr(player.getPosition_ptr());
+	worldView.setCenter(player.position);
 
 	// init tilemap
 	worldTilemap.loadtilemap("assets/textures/tilemap/test_tilemap.png");
@@ -44,7 +45,7 @@ void game::gameClass::initRenderTexContext() {
 	}
 	// view is currently positionned using left-up, idk if I'll change this later
 	//worldView = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
-	gameRenderTexture.setView(worldView.view);
+	gameRenderTexture.setView(worldView);
 }
 
 // this function will become really big I guess
@@ -57,7 +58,8 @@ void game::gameClass::onUpdate() {
 	player.move(*deltaT_ptr, worldTilemap);
 
 	// update view
-	worldView.onUpdate(&gameRenderTexture);
+	worldView.setCenter(player.position);
+	gameRenderTexture.setView(worldView);
 	
 	// drawing to render texture
 	// this would use a loop soon so I have to take care I which order I put my objects

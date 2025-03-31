@@ -65,7 +65,10 @@ namespace game {
 		void drawTilemap(sf::RenderTexture* renderTex);
 
 		int readTile(sf::Vector2f pos) const;
+		int readTileDirect(sf::Vector2u pos) const;
+		sf::Vector2u convertToMapPos(sf::Vector2f pos) const ;
 
-		float intersect(sf::Vector2f pos, sf::Vector2f normDir, sf::Vector2f& normal);
+		float intersect(sf::Vector2f pos, sf::Vector2f normDir, sf::Vector2f& normal); // obsolete
+		bool traceRay(sf::Vector2f start, sf::Vector2f end, float& time, sf::Vector2f& normal);
 	};
 }

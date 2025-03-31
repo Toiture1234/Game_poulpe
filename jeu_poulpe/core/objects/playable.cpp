@@ -30,66 +30,77 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 		}
 	}
 
+	// tilemap collision test, switch to clamp based system
+	// check 2 tiles for each point of the hitbox
+	// position initialisation
+	sf::Vector2u tileUL = refTileMap.convertToMapPos(position);
+	sf::Vector2u tileUR = refTileMap.convertToMapPos(position + sf::Vector2f(32, 0));
+	sf::Vector2u tileDL = refTileMap.convertToMapPos(position + sf::Vector2f(0, 32));
+	sf::Vector2u tileDR = refTileMap.convertToMapPos(position + sf::Vector2f(32, 32));
+
+	// 8 values
+	bool leftUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(1, 0)) <= 10;
+	bool upUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(0, 1)) <= 10;
+	bool rightUR = refTileMap.readTileDirect(tileUR + sf::Vector2u(1, 0)) <= 10;
+	bool upUR = refTileMap.readTileDirect(tileUR - sf::Vector2u(0, 1)) <= 10;
+	bool leftDL = refTileMap.readTileDirect(tileDL - sf::Vector2u(1, 0)) <= 10;
+	bool downDL = refTileMap.readTileDirect(tileDL + sf::Vector2u(0, 1)) <= 10;
+	bool rightDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(1, 0)) <= 10;
+	bool downDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(0, 1)) <= 10;
+
+	// final test booleans
+	bool up = upUL || upUR;
+	bool down = downDL || downDR;
+	bool left = leftUL || leftDL;
+	bool right = rightUR || rightDR;
+
+	// debug :)
+	std::cout << "UP : " << up << "\n";
+	std::cout << "DOWN : " << down << "\n";
+	std::cout << "LEFT : " << left << "\n";
+	std::cout << "RIGHT : " << right << "\n";
+
+	// add jump power if we're on the ground
+	// TODO : use another technique for this because it usually produces incorrect results
+	// use a two points based solution
+	if (canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && down && position.y + 0.005 - tileDL.y * 32 > -0.006)
+		baseAcceleration.y -= 5000;
+	
 	// converion to m.s^(-2)
 	baseAcceleration.x *= 32.f;
 	baseAcceleration.y *= 32.f;
 
-	// tilemap collision test
-	float nearDistance = 1e10;
-	sf::Vector2f normal = sf::Vector2f(0.f, 0.f);
-	if (velocity.length() > 0.f) {
-		sf::Vector2f normVelocity = velocity.normalized();
+	// velocity change
+	velocity += baseAcceleration * delta_time;
 
-		sf::Vector2f normal0;
-		sf::Vector2f normal1;
-		sf::Vector2f normal2;
-		sf::Vector2f normal3;
-
-		float distUpLeft = refTileMap.intersect(position + sf::Vector2f(2.f,2.f), normVelocity, normal0);
-		float distUpRight = refTileMap.intersect(position + sf::Vector2f(TILE_SIZE - 2, 2.f), normVelocity, normal1);
-		float distDownLeft = refTileMap.intersect(position + sf::Vector2f(2.f, TILE_SIZE - 2), normVelocity, normal2);
-		float distDownRight = refTileMap.intersect(position + sf::Vector2f(TILE_SIZE - 2, TILE_SIZE - 2), normVelocity, normal3);
-		nearDistance = fminf(distUpLeft, fminf(distUpRight, fminf(distDownLeft, distDownRight)));
-
-		if (distUpLeft <= distUpRight && distUpLeft <= distDownLeft && distUpLeft <= distDownRight) {
-			normal = normal0;
-			std::cout << "NORMAL0\n" << normal.x << " " << normal.y << "\n";
-		}
-		else if (distUpRight <= distUpLeft && distUpRight <= distDownLeft && distUpRight <= distDownRight) {
-			normal = normal1;
-			std::cout << "NORMAL1\n" << normal.x << " " << normal.y << "\n";
-		}
-		else if (distDownLeft <= distUpLeft && distDownLeft <= distUpRight && distDownLeft <= distDownRight) {
-			normal = normal2;
-			std::cout << "NORMAL2\n" << normal.x << " " << normal.y << "\n";
-		}
-		else if (distDownRight <= distUpLeft && distDownRight <= distUpRight && distDownRight <= distDownLeft) {
-			normal = normal3;
-			std::cout << "NORMAL3\n" << normal.x << " " << normal.y << "\n";
-		}
-
-		std::cout << position.x / 32.f << " " << position.y / 32.f << "\n";
+	// velocity change factor
+	if(up && tileUL.y * 32 - position.y > -0.006) {
+		std::cout << "Up touching\n";
+		velocity.y *= velocity.dot(sf::Vector2f(0, 1)) > 0.f ? 1.f : 0.f;
 	}
-	// calculations
-	velocity += baseAcceleration * delta_time; // this gives m.s^(-1)
+	if(down && position.y + 0.005 - tileDL.y * 32 > -0.006) {
+		std::cout << "Down touching\n";
+		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f;
+	}
+	if(left && tileUL.x * 32 - position.x > -0.006) {
+		std::cout << "Left touching\n";
+		velocity.x *= velocity.dot(sf::Vector2f(1, 0)) > 0.f ? 1.f : 0.f;
+	}
+	if(right && position.x + 0.005 - tileUR.x * 32 > -0.006) {
+		std::cout << "Right touching\n"; 
+		velocity.x *= velocity.dot(sf::Vector2f(-1, 0)) > 0.f ? 1.f : 0.f;
+	}
+
+	// I need the ability to change the velocity
 	
-	sf::Vector2f translationFactor = velocity * delta_time;
+	position += velocity * delta_time;
 
-	bool hit = false;
-	if (translationFactor.length() >= nearDistance) { // we are gonna hit the surface
-		hit = true;
-		translationFactor *= fminf(nearDistance / translationFactor.length(), 1.f); // make sure it doesn't go to infinity
-	}
-
-	// add translation factor to position
-	position += translationFactor;
-
-	if (hit) {
-		//position += normal;
-		position -= velocity * delta_time * 2.f;
-		velocity = sf::Vector2f(0.f,0.f);
-		std::cout << "HIT : " << normal.x << " " << normal.y << "\n";
-	}
+	// we can use only one of the positions to clamp the values
+	// maybe I can add optimisation but not now
+	if (up) position.y = fmaxf(tileUL.y * 32 + 0.005f, position.y);
+	if (down) position.y = fminf(tileDL.y * 32 - 0.005f, position.y);
+	if (left) position.x = fmaxf(tileUL.x * 32 + 0.005f, position.x);
+	if (right) position.x = fminf(tileUR.x * 32 - 0.005f, position.x);
 
 	objRef->setPosition(position);
 }

@@ -19,6 +19,9 @@ int game::tileMap::readTile(sf::Vector2f pos) const {
 	return tiles_arr[idx];
 #endif
 }
+int game::tileMap::readTileDirect(sf::Vector2u pos) const {
+	return tiles_img.getPixel(pos).r;
+}
 
 // basically the same as the constructor
 void game::tileMap::loadtilemap(std::string path) {
@@ -67,4 +70,67 @@ float game::tileMap::intersect(sf::Vector2f pos, sf::Vector2f normDir, sf::Vecto
 	}
 	return t;
 	
+}
+
+bool game::tileMap::traceRay(sf::Vector2f start, sf::Vector2f end, float& time, sf::Vector2f& normal) {
+
+	time = 0.f;
+	normal = sf::Vector2f(0.f, 0.f);
+
+	int tileValue = readTile(start);
+	if (tileValue <= 10) return true;
+
+	sf::Vector2f dir = end - start;
+	float dirL = dir.length();
+	std::cout << dirL << "\n";
+	if (dir.length() == 0.f) return false;
+	dir = dir.normalized();
+
+	int mX = dir.x >= 0.f ? 1 : 0;
+	int mY = dir.y >= 0.f ? 1 : 0;
+
+	sf::Vector2f tilePos = sf::Vector2f((int)start.x / 32.f, (int)start.y / 32.f);
+	sf::Vector2f pos = start;
+	for (int i = 0; i < MAX_STEPS; i++) {
+		float dX = mX * TILE_SIZE - (pos.x - tilePos.x * TILE_SIZE);
+		float dY = mY * TILE_SIZE - (pos.y - tilePos.y * TILE_SIZE);
+
+		float tX = dX / dir.x;
+		float tY = dY / dir.y;
+
+		if (tX <= tY) {
+			tilePos.x += -1 + 2 * mX;
+			time += tX;
+			pos += dir * tX;
+			normal = sf::Vector2f(1 - 2 * mX, 0.f);
+		}
+		else {
+			tilePos.y += -1 + 2 * mY;
+			time += tY;
+			pos += dir * tY;
+			normal = sf::Vector2f(0.f, 1 - 2 * mY);
+		}
+		if (time >= dirL) {
+			time = fminf(time, dirL);
+			std::cout << "END 02\n";
+			return false;
+		}
+		if (tiles_img.getPixel(sf::Vector2u(tilePos.x, tilePos.y)).r <= 10) {
+			//time /= dirL;
+			std::cout << "END 01\n";
+			return true;
+		}
+		
+	}
+	return false;
+}
+
+sf::Vector2u game::tileMap::convertToMapPos(sf::Vector2f pos) const {
+	sf::Vector2f tilePos = sf::Vector2f(pos.x / 32.f, pos.y / 32.f);
+
+	// equivalent to clamping (as I don't made any function for clamping yet), to change later maybe
+	tilePos.x = fminf(size.x - 1, fmaxf(0, tilePos.x));
+	tilePos.y = fminf(size.y - 1, fmaxf(0, tilePos.y));
+
+	return sf::Vector2u(tilePos.x, tilePos.y);
 }

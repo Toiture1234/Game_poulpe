@@ -18,10 +18,11 @@ namespace game {
 		// player's mass in kg
 		float mass = 1.f;
 
-		sf::Vector2f lastNormal;
 	public:
+		// player action manager (for cinematics etc)
 		bool canMove;
 		bool applyGravity;
+
 		// moving related stuff
 		// player's velocity
 		sf::Vector2f velocity;
