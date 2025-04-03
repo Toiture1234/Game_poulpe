@@ -14,22 +14,6 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 	// TODO : have multiple frictions forces (for floor, etc)
 	baseAcceleration += sf::Vector2f(-6.f * m_PI * airViscosity * 0.5f * velocity.x / mass, -6.f * m_PI * airViscosity * 0.5f * velocity.y / mass);
 
-	// key inputs
-	if (canMove) {
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
-			baseAcceleration.y += -10.f;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-			baseAcceleration.y += 10.f;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-			baseAcceleration.x += 10.f;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-			baseAcceleration.x -= 10.f;
-		}
-	}
-
 	// tilemap collision test, switch to clamp based system
 	// check 2 tiles for each point of the hitbox
 	// position initialisation
@@ -54,46 +38,66 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 	bool left = leftUL || leftDL;
 	bool right = rightUR || rightDR;
 
-	// debug :)
-	std::cout << "UP : " << up << "\n";
-	std::cout << "DOWN : " << down << "\n";
-	std::cout << "LEFT : " << left << "\n";
-	std::cout << "RIGHT : " << right << "\n";
+	bool touchingUp = up && tileUL.y * 32 - position.y > -0.006;
+	bool touchingDown = down && position.y + 0.005 - tileDL.y * 32 > -0.006;
+	bool touchingLeft = left && tileUL.x * 32 - position.x > -0.006;
+	bool touchingRight = right && position.x + 0.005 - tileUR.x * 32 > -0.006;
 
-	// add jump power if we're on the ground
-	// TODO : use another technique for this because it usually produces incorrect results
-	// use a two points based solution
-	if (canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && down && position.y + 0.005 - tileDL.y * 32 > -0.006)
-		baseAcceleration.y -= 5000;
+	// key inputs
+	if (canMove) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
+			baseAcceleration.y += -10.f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+			baseAcceleration.y += 10.f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+			baseAcceleration.x += 10.f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
+			baseAcceleration.x -= 10.f;
+		}
+	}
+
+	// friction force of medium we're on
+	if (touchingDown || touchingLeft || touchingRight || touchingUp)
+		baseAcceleration += -velocity * 0.05f;
 	
 	// converion to m.s^(-2)
 	baseAcceleration.x *= 32.f;
 	baseAcceleration.y *= 32.f;
 
 	// velocity change
-	velocity += baseAcceleration * delta_time;
+	velocity += baseAcceleration * delta_time; // this works as long there is no single short events (like jumping)
 
 	// velocity change factor
-	if(up && tileUL.y * 32 - position.y > -0.006) {
+	if(touchingUp) { // we touch ceiling
 		std::cout << "Up touching\n";
 		velocity.y *= velocity.dot(sf::Vector2f(0, 1)) > 0.f ? 1.f : 0.f;
 	}
-	if(down && position.y + 0.005 - tileDL.y * 32 > -0.006) {
+	if(touchingDown) { // we touch floor
 		std::cout << "Down touching\n";
-		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f;
+		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f; 
 	}
-	if(left && tileUL.x * 32 - position.x > -0.006) {
+	if(touchingLeft) { // we touch left wall
 		std::cout << "Left touching\n";
 		velocity.x *= velocity.dot(sf::Vector2f(1, 0)) > 0.f ? 1.f : 0.f;
 	}
-	if(right && position.x + 0.005 - tileUR.x * 32 > -0.006) {
+	if(touchingRight) { // we touch right wall
 		std::cout << "Right touching\n"; 
 		velocity.x *= velocity.dot(sf::Vector2f(-1, 0)) > 0.f ? 1.f : 0.f;
 	}
 
 	// I need the ability to change the velocity
-	
+	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown;
+	if (isJumping) {
+		velocity.y -= 144;
+		std::cout << "ONE JUMP\n";
+	}
+
 	position += velocity * delta_time;
+	if (isJumping) std::cout << velocity.y << " " << delta_time << "\n";
+	std::cout << velocity.y << "\n";
 
 	// we can use only one of the positions to clamp the values
 	// maybe I can add optimisation but not now

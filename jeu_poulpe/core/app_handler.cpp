@@ -9,6 +9,8 @@ void game::app::run() {
     sf::Clock mainClock;
     mainClock.restart();
 
+    //window.setFramerateLimit(30);
+
     // main loop
     while (window.isOpen())
     {
@@ -24,7 +26,7 @@ void game::app::run() {
         this->delta_time = mainClock.restart().asSeconds();
         this->runTime += delta_time;
 
-        std::cout << "Runtime : " << this->runTime << ", deltaTime : " << this->delta_time << "\n";
+        //std::cout << "Runtime : " << this->runTime << ", deltaTime : " << this->delta_time << "\n";
     }
 }
 void game::app::handleEvents() {
