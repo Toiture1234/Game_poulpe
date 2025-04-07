@@ -26,7 +26,7 @@ void game::app::run() {
         this->delta_time = mainClock.restart().asSeconds();
         this->runTime += delta_time;
 
-        //std::cout << "Runtime : " << this->runTime << ", deltaTime : " << this->delta_time << "\n";
+        std::cout << "Runtime : " << this->runTime << ", deltaTime : " << this->delta_time << "\n";
     }
 }
 void game::app::handleEvents() {

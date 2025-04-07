@@ -7,6 +7,8 @@
 #include "object.hpp"
 #include "../tilemap/tilemap.hpp"
 
+#define DEV_MODE 0
+
 namespace game {
 	class playable {
 	private:
@@ -25,9 +27,9 @@ namespace game {
 
 		// moving related stuff
 		// player's velocity
-		sf::Vector2f velocity;
+		sf::Vector2f velocity = sf::Vector2f(0, 0);
 		// player's position
-		sf::Vector2f position;
+		sf::Vector2f position = sf::Vector2f(0, 0);
 
 		// this constructor allows to declare a playable object without already knowing it's textures
 		playable() {

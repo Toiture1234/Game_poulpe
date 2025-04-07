@@ -35,7 +35,7 @@ namespace game {
 			window_name = wN;
 			window = sf::RenderWindow(sf::VideoMode({ window_width, window_height }), window_name.c_str());
 			runTime = 0.f;
-			delta_time = 1.f;
+			delta_time = 0.f; // this avoid excessive moving when starting
 			thisGame = gameClass();
 		}
 

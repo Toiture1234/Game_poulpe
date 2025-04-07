@@ -8,12 +8,7 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 	// in px.s^(-2)
 	sf::Vector2f baseAcceleration = applyGravity ? sf::Vector2f(0.f, 9.81f) : sf::Vector2f(0.f, 0.f); 
 
-	// friction force in air, using stokes's law, this is theorically incorect but this is a game
-	// this means F = -6*pi*airViscosity*radius*velocity
-	// this almost does nothing but who cares
-	// TODO : have multiple frictions forces (for floor, etc)
-	baseAcceleration += sf::Vector2f(-6.f * m_PI * airViscosity * 0.5f * velocity.x / mass, -6.f * m_PI * airViscosity * 0.5f * velocity.y / mass);
-
+	
 	// tilemap collision test, switch to clamp based system
 	// check 2 tiles for each point of the hitbox
 	// position initialisation
@@ -44,28 +39,39 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 	bool touchingRight = right && position.x + 0.005 - tileUR.x * 32 > -0.006;
 
 	// key inputs
+#if !DEV_MODE
+	if (canMove && touchingDown) {
+#else 
 	if (canMove) {
+#endif
+#if DEV_MODE
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
-			baseAcceleration.y += -10.f;
+			baseAcceleration.y += -20.f;
 		}
+#endif
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-			baseAcceleration.y += 10.f;
+			baseAcceleration.y += 20.f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-			baseAcceleration.x += 10.f;
+			baseAcceleration.x += 20.f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-			baseAcceleration.x -= 10.f;
+			baseAcceleration.x -= 20.f;
 		}
 	}
-
-	// friction force of medium we're on
-	if (touchingDown || touchingLeft || touchingRight || touchingUp)
-		baseAcceleration += -velocity * 0.05f;
 	
 	// converion to m.s^(-2)
 	baseAcceleration.x *= 32.f;
 	baseAcceleration.y *= 32.f;
+
+	// friction force in air, using stokes's law, this is theorically incorect but this is a game
+	// this means F = -6*pi*airViscosity*radius*velocity
+	// this almost does nothing but who cares
+	baseAcceleration += sf::Vector2f(-6.f * m_PI * airViscosity * 0.5f * velocity.x / mass, -6.f * m_PI * airViscosity * 0.5f * velocity.y / mass);
+
+	// friction force of medium we're on
+	if (touchingDown || touchingLeft || touchingRight || touchingUp)
+		baseAcceleration += -velocity * 4.f;
 
 	// velocity change
 	velocity += baseAcceleration * delta_time; // this works as long there is no single short events (like jumping)
@@ -91,13 +97,11 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 	// I need the ability to change the velocity
 	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown;
 	if (isJumping) {
-		velocity.y -= 144;
+		velocity.y -= 155;
 		std::cout << "ONE JUMP\n";
 	}
 
 	position += velocity * delta_time;
-	if (isJumping) std::cout << velocity.y << " " << delta_time << "\n";
-	std::cout << velocity.y << "\n";
 
 	// we can use only one of the positions to clamp the values
 	// maybe I can add optimisation but not now
