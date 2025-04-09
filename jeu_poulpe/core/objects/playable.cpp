@@ -3,29 +3,29 @@
 void game::playable::setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr) {
 	objRef->setTextures(albedo_ptr, normal_ptr);
 }
-void game::playable::move(float delta_time, tileMap& refTileMap) {
+void game::playable::move(float delta_time, tileMap& refTileMap)
+{
 	// derived from the Newton's second law
 	// in px.s^(-2)
-	sf::Vector2f baseAcceleration = applyGravity ? sf::Vector2f(0.f, 9.81f) : sf::Vector2f(0.f, 0.f); 
+	sf::Vector2f baseAcceleration = applyGravity ? sf::Vector2f(0.f, 9.81f) : sf::Vector2f(0.f, 0.f);
 
-	
 	// tilemap collision test, switch to clamp based system
 	// check 2 tiles for each point of the hitbox
 	// position initialisation
-	sf::Vector2u tileUL = refTileMap.convertToMapPos(position);
-	sf::Vector2u tileUR = refTileMap.convertToMapPos(position + sf::Vector2f(32, 0));
-	sf::Vector2u tileDL = refTileMap.convertToMapPos(position + sf::Vector2f(0, 32));
-	sf::Vector2u tileDR = refTileMap.convertToMapPos(position + sf::Vector2f(32, 32));
+	sf::Vector2u tileUL = refTileMap.convertToMapPos(position + sf::Vector2f(1, 1));
+	sf::Vector2u tileUR = refTileMap.convertToMapPos(position + sf::Vector2f(31, 1));
+	sf::Vector2u tileDL = refTileMap.convertToMapPos(position + sf::Vector2f(1, 31));
+	sf::Vector2u tileDR = refTileMap.convertToMapPos(position + sf::Vector2f(31, 31));
 
 	// 8 values
-	bool leftUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(1, 0)) <= 10;
-	bool upUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(0, 1)) <= 10;
-	bool rightUR = refTileMap.readTileDirect(tileUR + sf::Vector2u(1, 0)) <= 10;
-	bool upUR = refTileMap.readTileDirect(tileUR - sf::Vector2u(0, 1)) <= 10;
-	bool leftDL = refTileMap.readTileDirect(tileDL - sf::Vector2u(1, 0)) <= 10;
-	bool downDL = refTileMap.readTileDirect(tileDL + sf::Vector2u(0, 1)) <= 10;
-	bool rightDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(1, 0)) <= 10;
-	bool downDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(0, 1)) <= 10;
+	bool leftUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(1, 0)) == SOLID_0;
+	bool upUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(0, 1)) == SOLID_0;
+	bool rightUR = refTileMap.readTileDirect(tileUR + sf::Vector2u(1, 0)) == SOLID_0;
+	bool upUR = refTileMap.readTileDirect(tileUR - sf::Vector2u(0, 1)) == SOLID_0;
+	bool leftDL = refTileMap.readTileDirect(tileDL - sf::Vector2u(1, 0)) == SOLID_0;
+	bool downDL = refTileMap.readTileDirect(tileDL + sf::Vector2u(0, 1)) == SOLID_0;
+	bool rightDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(1, 0)) == SOLID_0;
+	bool downDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(0, 1)) == SOLID_0;
 
 	// final test booleans
 	bool up = upUL || upUR;
@@ -39,27 +39,18 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 	bool touchingRight = right && position.x + 0.005 - tileUR.x * 32 > -0.006;
 
 	// key inputs
-#if !DEV_MODE
-	if (canMove && touchingDown) {
-#else 
-	if (canMove) {
-#endif
-#if DEV_MODE
+	if(canMove) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
-			baseAcceleration.y += -20.f;
-		}
-#endif
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-			baseAcceleration.y += 20.f;
+			baseAcceleration.y += -20.f * DEV_MODE;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-			baseAcceleration.x += 20.f;
+			baseAcceleration.x += 3 + 17 * touchingDown;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-			baseAcceleration.x -= 20.f;
+			baseAcceleration.x -= 3 + 17 * touchingDown;
 		}
 	}
-	
+
 	// converion to m.s^(-2)
 	baseAcceleration.x *= 32.f;
 	baseAcceleration.y *= 32.f;
@@ -70,34 +61,34 @@ void game::playable::move(float delta_time, tileMap& refTileMap) {
 	baseAcceleration += sf::Vector2f(-6.f * m_PI * airViscosity * 0.5f * velocity.x / mass, -6.f * m_PI * airViscosity * 0.5f * velocity.y / mass);
 
 	// friction force of medium we're on
-	if (touchingDown || touchingLeft || touchingRight || touchingUp)
+	if (touchingDown)
 		baseAcceleration += -velocity * 4.f;
 
 	// velocity change
 	velocity += baseAcceleration * delta_time; // this works as long there is no single short events (like jumping)
 
 	// velocity change factor
-	if(touchingUp) { // we touch ceiling
+	if (touchingUp) { // we touch ceiling
 		std::cout << "Up touching\n";
 		velocity.y *= velocity.dot(sf::Vector2f(0, 1)) > 0.f ? 1.f : 0.f;
 	}
-	if(touchingDown) { // we touch floor
+	if (touchingDown) { // we touch floor
 		std::cout << "Down touching\n";
-		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f; 
+		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f;
 	}
-	if(touchingLeft) { // we touch left wall
+	if (touchingLeft) { // we touch left wall
 		std::cout << "Left touching\n";
 		velocity.x *= velocity.dot(sf::Vector2f(1, 0)) > 0.f ? 1.f : 0.f;
 	}
-	if(touchingRight) { // we touch right wall
-		std::cout << "Right touching\n"; 
+	if (touchingRight) { // we touch right wall
+		std::cout << "Right touching\n";
 		velocity.x *= velocity.dot(sf::Vector2f(-1, 0)) > 0.f ? 1.f : 0.f;
 	}
 
 	// I need the ability to change the velocity
 	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown;
 	if (isJumping) {
-		velocity.y -= 155;
+		velocity.y -= 170;
 		std::cout << "ONE JUMP\n";
 	}
 

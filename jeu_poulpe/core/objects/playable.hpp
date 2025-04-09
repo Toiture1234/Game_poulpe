@@ -10,6 +10,7 @@
 #define DEV_MODE 0
 
 namespace game {
+	// main playable class
 	class playable {
 	private:
 		// reference to drawable object
@@ -27,9 +28,9 @@ namespace game {
 
 		// moving related stuff
 		// player's velocity
-		sf::Vector2f velocity = sf::Vector2f(0, 0);
+		sf::Vector2f velocity;
 		// player's position
-		sf::Vector2f position = sf::Vector2f(0, 0);
+		sf::Vector2f position;
 
 		// this constructor allows to declare a playable object without already knowing it's textures
 		playable() {

@@ -16,6 +16,11 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	objectAtlas.at(0).setPosition(sf::Vector2f(0, 50));
 	objectAtlas.push_back(object(&textureAtlas.at(2), &textureAtlas.at(0)));
 
+	// init text displayers
+	text_dspAtlas.push_back(textDiplayer(&textureAtlas.at(3), &textureAtlas.at(3)));
+	text_dspAtlas.at(0).position = sf::Vector2f(5 * TILE_SIZE, 4 * TILE_SIZE);
+	text_dspAtlas.at(0).littleTriangle = new object(&textureAtlas.at(4), &textureAtlas.at(4));
+
 	// init player better this way so the player is not dependent to an object
 	player = playable(&textureAtlas.at(0), &textureAtlas.at(0));
 	player.canMove = true;
@@ -32,9 +37,11 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 void game::gameClass::initTextures() {
 	// load every texture and push back to vector
 	sf::Texture tmp("assets/textures/null.png");
-	textureAtlas.push_back(tmp);
-	textureAtlas.push_back(sf::Texture("assets/textures/nullw.png"));
-	textureAtlas.push_back(sf::Texture("assets/textures/background.png"));
+	textureAtlas.push_back(tmp); // 0
+	textureAtlas.push_back(sf::Texture("assets/textures/nullw.png")); // 1
+	textureAtlas.push_back(sf::Texture("assets/textures/background.png")); // 2
+	textureAtlas.push_back(sf::Texture("assets/textures/objects/basic_sign.png")); // 3
+	textureAtlas.push_back(sf::Texture("assets/textures/misc/triangle_txt.png")); // 4
 }
 void game::gameClass::initShaders() {
 
@@ -55,10 +62,12 @@ void game::gameClass::onUpdate() {
 	// keep track of user input
 	
 	// game logic
-	player.move(*deltaT_ptr, worldTilemap);
+	if(!stopMovement) player.move(*deltaT_ptr, worldTilemap);
+
+	text_dspAtlas.at(0).onUpdate(player, stopMovement);
 
 	// update view
-	worldView.setCenter(player.position);
+	worldView.setCenter(player.position + sf::Vector2f(16, 16));
 	gameRenderTexture.setView(worldView);
 	
 	// drawing to render texture
@@ -68,6 +77,8 @@ void game::gameClass::onUpdate() {
 	//objectAtlas.at(0).draw(&gameRenderTexture, nullptr);
 
 	worldTilemap.drawTilemap(&gameRenderTexture);
+
+	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr);
 
 	player.draw(&gameRenderTexture, nullptr);
 }

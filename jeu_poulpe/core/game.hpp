@@ -9,6 +9,7 @@
 #include "tilemap/tilemap.hpp"
 #include "objects/playable.hpp"
 #include "follow_view.hpp"
+#include "objects/text_displayer.hpp"
 
 namespace game {
 	class gameClass {
@@ -18,13 +19,17 @@ namespace game {
 		std::vector<sf::Shader> shaderAtlas;
 		std::vector<object> objectAtlas;
 
+		// text displayers
+		std::vector<textDiplayer> text_dspAtlas;
+
 		// player def
 		playable player;
 
 		// tilemap
 		tileMap worldTilemap;
 
-		bool isOnPause;
+		bool isOnPause; // stops every game logic
+		bool stopMovement;
 
 		// pointers to time variables refered in the app, this gives global time to game without need to refresh it on every frame
 		float* deltaT_ptr;
@@ -54,6 +59,7 @@ namespace game {
 			view_posX = view_posY = 0;
 			windowH_ptr = windowW_ptr = nullptr;
 			worldView = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
+			stopMovement = false;
 		}
 
 		void init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigned int* wH);

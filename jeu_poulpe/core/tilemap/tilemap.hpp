@@ -11,20 +11,11 @@
 #define MAX_STEPS 50
 #define EPSILON 0.5f
 
+
+// define type of blocks
+#define SOLID_0 0
+
 namespace game {
-
-	// enum for every possible tile configuration, 16 now but will probably grow (up to 255 max), so I should probably put this to another file
-	enum tilesIndex
-	{
-		// different materials
-		// natural things
-		AIR = 0,
-		ROCK,
-		GRASS,
-
-		// artificial things
-		WOOD
-	};
 
 	// small utility class to easily use tilemaps
 	class tileSet {

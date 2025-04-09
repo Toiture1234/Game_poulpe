@@ -148,6 +148,7 @@
     <ClCompile Include="core\game.cpp" />
     <ClCompile Include="core\objects\object.cpp" />
     <ClCompile Include="core\objects\playable.cpp" />
+    <ClCompile Include="core\objects\text_displayer.cpp" />
     <ClCompile Include="core\tilemap\tilemap.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -158,6 +159,7 @@
     <ClInclude Include="core\game.hpp" />
     <ClInclude Include="core\objects\object.hpp" />
     <ClInclude Include="core\objects\playable.hpp" />
+    <ClInclude Include="core\objects\text_displayer.hpp" />
     <ClInclude Include="core\tilemap\tilemap.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
