@@ -16,6 +16,8 @@ void game::app::run() {
     {
         handleEvents();
 
+        std::cout << "NEW FRAME :\n";
+
         window.clear();
         thisGame.onUpdate();
         thisGame.drawToWindow(&window);
@@ -27,6 +29,7 @@ void game::app::run() {
         this->runTime += delta_time;
 
         std::cout << "Runtime : " << this->runTime << ", deltaTime : " << this->delta_time << ", fps : " << 1./ this->delta_time << "\n";
+        
     }
 }
 void game::app::handleEvents() {

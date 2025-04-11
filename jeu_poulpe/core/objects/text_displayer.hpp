@@ -12,6 +12,7 @@ namespace game {
 	class textDiplayer {
 	private:
 		object* objRef;
+		
 
 		std::string text;
 		bool isShowingText;
@@ -22,19 +23,22 @@ namespace game {
 			isShowingText = false;
 			possibleInteraction = false;
 			littleTriangle = nullptr;
+			drawingText = nullptr;
 		}
 		textDiplayer(sf::Texture* albedo, sf::Texture* normal) {
 			objRef = new object(albedo, normal);
 			isShowingText = false;
 			possibleInteraction = false;
 			littleTriangle = nullptr;
+			drawingText = nullptr;
 		}
 		
 		void setText(std::string txt);
 		void onUpdate(playable& player, bool& stopMvmt);
-		void draw(sf::RenderTexture* renderTex, float runTime);
+		void draw(sf::RenderTexture* renderTex, float runTime, sf::Vector2f playerPos);
 
 		sf::Vector2f position;
 		object* littleTriangle;
+		sf::Text* drawingText;
 	};
 }

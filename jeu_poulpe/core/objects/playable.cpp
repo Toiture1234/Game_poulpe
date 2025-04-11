@@ -44,10 +44,10 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 			baseAcceleration.y += -20.f * DEV_MODE;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-			baseAcceleration.x += 3 + 17 * touchingDown;
+			baseAcceleration.x += 3 + 25 * touchingDown;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-			baseAcceleration.x -= 3 + 17 * touchingDown;
+			baseAcceleration.x -= 3 + 25 * touchingDown;
 		}
 	}
 
@@ -62,7 +62,7 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 
 	// friction force of medium we're on
 	if (touchingDown)
-		baseAcceleration += -velocity * 4.f;
+		baseAcceleration += -velocity * 8.f;
 
 	// velocity change
 	velocity += baseAcceleration * delta_time; // this works as long there is no single short events (like jumping)
@@ -72,10 +72,6 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 		std::cout << "Up touching\n";
 		velocity.y *= velocity.dot(sf::Vector2f(0, 1)) > 0.f ? 1.f : 0.f;
 	}
-	if (touchingDown) { // we touch floor
-		std::cout << "Down touching\n";
-		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f;
-	}
 	if (touchingLeft) { // we touch left wall
 		std::cout << "Left touching\n";
 		velocity.x *= velocity.dot(sf::Vector2f(1, 0)) > 0.f ? 1.f : 0.f;
@@ -84,12 +80,16 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 		std::cout << "Right touching\n";
 		velocity.x *= velocity.dot(sf::Vector2f(-1, 0)) > 0.f ? 1.f : 0.f;
 	}
+	if (touchingDown) { // we touch floor
+		std::cout << "Down touching\n";
+		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f;
+	}
 
 	// I need the ability to change the velocity
 	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown;
 	if (isJumping) {
-		velocity.y -= 170;
-		std::cout << "ONE JUMP\n";
+		velocity.y = -170;
+		std::cout << "ONE JUMP ---------------------------------------------------------------------\n";
 	}
 
 	position += velocity * delta_time;

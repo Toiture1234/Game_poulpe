@@ -12,17 +12,20 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	initRenderTexContext();
 
 	// init objects
-	objectAtlas.push_back(object(&textureAtlas.at(1), &textureAtlas.at(0)));
+	objectAtlas.push_back(object(&textureAtlas.at(NULLTEX_WHITE), &textureAtlas.at(NULLTEX_WHITE)));
 	objectAtlas.at(0).setPosition(sf::Vector2f(0, 50));
-	objectAtlas.push_back(object(&textureAtlas.at(2), &textureAtlas.at(0)));
+	objectAtlas.push_back(object(&textureAtlas.at(STARS_BKG), &textureAtlas.at(STARS_BKG)));
 
 	// init text displayers
-	text_dspAtlas.push_back(textDiplayer(&textureAtlas.at(3), &textureAtlas.at(3)));
+	text_dspAtlas.push_back(textDiplayer(&textureAtlas.at(SIGN), &textureAtlas.at(SIGN)));
 	text_dspAtlas.at(0).position = sf::Vector2f(5 * TILE_SIZE, 4 * TILE_SIZE);
-	text_dspAtlas.at(0).littleTriangle = new object(&textureAtlas.at(4), &textureAtlas.at(4));
+	text_dspAtlas.at(0).littleTriangle = new object(&textureAtlas.at(SIGN_TRIANGLE), &textureAtlas.at(SIGN_TRIANGLE));
+	text_dspAtlas.at(0).drawingText = new sf::Text(fontAtlas.at(0));
+	text_dspAtlas.at(0).setText("Hello, welcome in my game !! Press Escape \nto exit :)");
+	
 
 	// init player better this way so the player is not dependent to an object
-	player = playable(&textureAtlas.at(0), &textureAtlas.at(0));
+	player = playable(&textureAtlas.at(NULLTEX), &textureAtlas.at(NULLTEX));
 	player.canMove = true;
 	player.applyGravity = true;
 	player.position = sf::Vector2f(48.f, 48.f);
@@ -42,6 +45,9 @@ void game::gameClass::initTextures() {
 	textureAtlas.push_back(sf::Texture("assets/textures/background.png")); // 2
 	textureAtlas.push_back(sf::Texture("assets/textures/objects/basic_sign.png")); // 3
 	textureAtlas.push_back(sf::Texture("assets/textures/misc/triangle_txt.png")); // 4
+
+	// load fonts
+	fontAtlas.push_back(sf::Font("assets/font/minecraft-regular.ttf"));
 }
 void game::gameClass::initShaders() {
 
@@ -67,7 +73,7 @@ void game::gameClass::onUpdate() {
 	text_dspAtlas.at(0).onUpdate(player, stopMovement);
 
 	// update view
-	worldView.setCenter(player.position + sf::Vector2f(16, 16));
+	worldView.setCenter(player.position + sf::Vector2f(16, -16));
 	gameRenderTexture.setView(worldView);
 	
 	// drawing to render texture
@@ -78,7 +84,7 @@ void game::gameClass::onUpdate() {
 
 	worldTilemap.drawTilemap(&gameRenderTexture);
 
-	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr);
+	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr, player.position);
 
 	player.draw(&gameRenderTexture, nullptr);
 }

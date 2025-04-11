@@ -3,6 +3,8 @@
 void game::textDiplayer::setText(std::string txt) {
 	text.clear();
 	text = txt;
+	drawingText->setString(text);
+	drawingText->scale({ 0.2, 0.2 });
 }
 
 void game::textDiplayer::onUpdate(playable& player, bool& stopMvmt) 
@@ -32,7 +34,7 @@ void game::textDiplayer::onUpdate(playable& player, bool& stopMvmt)
 
 }
 
-void game::textDiplayer::draw(sf::RenderTexture* renderTex, float runTime) {
+void game::textDiplayer::draw(sf::RenderTexture* renderTex, float runTime, sf::Vector2f playerPos) {
 	objRef->draw(renderTex, nullptr);
 
 	if (possibleInteraction) {
@@ -43,9 +45,17 @@ void game::textDiplayer::draw(sf::RenderTexture* renderTex, float runTime) {
 
 	// draw text
 	if (isShowingText) {
+		sf::RectangleShape box({ 160, 80 });
+		box.setPosition(playerPos + sf::Vector2f(-64, -112));
+		box.setFillColor(sf::Color::White);
+		renderTex->draw(box);
 
-	}
-	else {
+		box.setSize({ 156, 76 });
+		box.setPosition(playerPos + sf::Vector2f(-62, -110));
+		box.setFillColor(sf::Color::Black);
+		renderTex->draw(box);
 
+		drawingText->setPosition(playerPos + sf::Vector2f(-64 + 4, -112 + 4));
+		renderTex->draw(*drawingText);
 	}
 }

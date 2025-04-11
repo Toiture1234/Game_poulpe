@@ -28,6 +28,9 @@ namespace game {
 		// tilemap
 		tileMap worldTilemap;
 
+		// font
+		std::vector<sf::Font> fontAtlas;
+
 		bool isOnPause; // stops every game logic
 		bool stopMovement;
 
@@ -54,8 +57,8 @@ namespace game {
 		gameClass() {
 			isOnPause = false;
 			deltaT_ptr = runT_ptr = nullptr;
-			view_width = 320;
-			view_height = 180;
+			view_width = 416;
+			view_height = 234;
 			view_posX = view_posY = 0;
 			windowH_ptr = windowW_ptr = nullptr;
 			worldView = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
