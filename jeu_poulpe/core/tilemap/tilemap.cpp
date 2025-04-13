@@ -10,24 +10,31 @@ int game::tileMap::readTile(sf::Vector2f pos) const {
 	tilePos.x = fminf(size.x - 1, fmaxf(0, tilePos.x));
 	tilePos.y = fminf(size.y - 1, fmaxf(0, tilePos.y));
 
-	int idx = tilePos.x + tilePos.y * size.x;
+	int idx = convertToIndex(tilePos);
 
 #if READ_FROM_IMAGE
 	// read only the red channel, this allows to have 255 different indicies, it should be enough
 	return tiles_img.getPixel(sf::Vector2u(tilePos.x, tilePos.y)).r;
 #else
-	return tiles_arr[idx];
+	return pixelArray[idx];
 #endif
 }
+
+// read from the position in image space
 int game::tileMap::readTileDirect(sf::Vector2u pos) const {
+#if READ_FROM_IMAGE
+	// read only the red channel, this allows to have 255 different indicies, it should be enough
 	return tiles_img.getPixel(pos).r;
+#else
+	return pixelArray[convertToIndex((sf::Vector2f)pos)];
+#endif
 }
 
 // basically the same as the constructor
 void game::tileMap::loadtilemap(std::string path) {
 	if (!tiles_img.loadFromFile(path)) std::cout << "ERROR -- UNABLE TO LOAD TILEMAP\n";
 	size = tiles_img.getSize();
-	tiles_arr = new unsigned int[size.x * size.y];
+	pixelArray = tiles_img.getPixelsPtr();
 }
 
 void game::tileMap::drawTilemap(sf::RenderTexture* renderTex) {
@@ -133,4 +140,7 @@ sf::Vector2u game::tileMap::convertToMapPos(sf::Vector2f pos) const {
 	tilePos.y = fminf(size.y - 1, fmaxf(0, tilePos.y));
 
 	return sf::Vector2u(tilePos.x, tilePos.y);
+}
+int game::tileMap::convertToIndex(sf::Vector2f mapPos) const {
+	return (mapPos.x + mapPos.y * size.x) * 4;
 }

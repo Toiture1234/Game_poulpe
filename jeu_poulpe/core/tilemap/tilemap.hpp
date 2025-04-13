@@ -7,7 +7,7 @@
 #include "../constants.hpp"
 #include "../objects/object.hpp"
 
-#define READ_FROM_IMAGE 1
+#define READ_FROM_IMAGE 0
 #define MAX_STEPS 50
 #define EPSILON 0.5f
 
@@ -41,15 +41,15 @@ namespace game {
 		sf::Vector2u size;
 
 		// array of int to read tiles without relying on the sf::Image
-		unsigned int* tiles_arr;
+		const uint8_t* pixelArray;
 	public:
 		tileMap() {
-			tiles_arr = nullptr;
+			pixelArray = nullptr;
 		}
 		tileMap(std::string path) {
 			if (!tiles_img.loadFromFile(path)) std::cout << "ERROR -- UNABLE TO LOAD TILEMAP\n";
 			size = tiles_img.getSize();
-			tiles_arr = new unsigned int[size.x * size.y];
+			pixelArray = tiles_img.getPixelsPtr();
 		}
 
 		void loadtilemap(std::string path);
@@ -58,6 +58,7 @@ namespace game {
 		int readTile(sf::Vector2f pos) const;
 		int readTileDirect(sf::Vector2u pos) const;
 		sf::Vector2u convertToMapPos(sf::Vector2f pos) const ;
+		int convertToIndex(sf::Vector2f mapPos) const;
 
 		float intersect(sf::Vector2f pos, sf::Vector2f normDir, sf::Vector2f& normal); // obsolete
 		bool traceRay(sf::Vector2f start, sf::Vector2f end, float& time, sf::Vector2f& normal);

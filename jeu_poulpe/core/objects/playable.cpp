@@ -67,6 +67,13 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 	// velocity change
 	velocity += baseAcceleration * delta_time; // this works as long there is no single short events (like jumping)
 
+	// jump
+	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown;
+	if (isJumping) {
+		velocity.y = -170;
+		std::cout << "ONE JUMP ---------------------------------------------------------------------\n";
+	}
+
 	// velocity change factor
 	if (touchingUp) { // we touch ceiling
 		std::cout << "Up touching\n";
@@ -85,12 +92,8 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f;
 	}
 
-	// I need the ability to change the velocity
-	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown;
-	if (isJumping) {
-		velocity.y = -170;
-		std::cout << "ONE JUMP ---------------------------------------------------------------------\n";
-	}
+	// velocity clamping
+	velocity.x = fmaxf(-128, fminf(128, velocity.x));
 
 	position += velocity * delta_time;
 

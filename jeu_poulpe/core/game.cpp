@@ -56,8 +56,6 @@ void game::gameClass::initRenderTexContext() {
 	if (!gameRenderTexture.resize(sf::Vector2u(*windowW_ptr, *windowH_ptr))) {
 		std::cout << "Failed to resize renderTex !!\n"; // a bit of debugging :)
 	}
-	// view is currently positionned using left-up, idk if I'll change this later
-	//worldView = sf::View(sf::FloatRect(sf::Vector2f(view_posX, view_posY), sf::Vector2f(view_width, view_height)));
 	gameRenderTexture.setView(worldView);
 }
 
