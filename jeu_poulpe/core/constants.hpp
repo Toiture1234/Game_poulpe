@@ -1,6 +1,8 @@
 #pragma once
 
 #define TILE_SIZE 32
+// world size in final version would be 64
+#define WORLD_SIZE 32
 
 // textures helper
 #define NULLTEX 0

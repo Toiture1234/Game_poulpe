@@ -10,7 +10,7 @@ int game::tileMap::readTile(sf::Vector2f pos) const {
 	tilePos.x = fminf(size.x - 1, fmaxf(0, tilePos.x));
 	tilePos.y = fminf(size.y - 1, fmaxf(0, tilePos.y));
 
-	int idx = convertToIndex(tilePos);
+	int idx = convertToIndex(sf::Vector2u(tilePos.x, tilePos.y));
 
 #if READ_FROM_IMAGE
 	// read only the red channel, this allows to have 255 different indicies, it should be enough
@@ -26,7 +26,7 @@ int game::tileMap::readTileDirect(sf::Vector2u pos) const {
 	// read only the red channel, this allows to have 255 different indicies, it should be enough
 	return tiles_img.getPixel(pos).r;
 #else
-	return pixelArray[convertToIndex((sf::Vector2f)pos)];
+	return pixelArray[convertToIndex(pos)];
 #endif
 }
 
@@ -37,13 +37,52 @@ void game::tileMap::loadtilemap(std::string path) {
 	pixelArray = tiles_img.getPixelsPtr();
 }
 
-void game::tileMap::drawTilemap(sf::RenderTexture* renderTex) {
-	// ye this is a terrible idea, I have to change this really quickly because it's REALLY dangerous
-	sf::Texture tileTex(tiles_img);
-	// init the sprite here
-	sf::Sprite drawer(tileTex);
-	drawer.setScale(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-	renderTex->draw(drawer);
+void game::tileMap::drawTilemap(sf::RenderTexture* renderTex, sf::Vector2f viewCenter) {
+
+	// 7 for x and 5 for y 
+	sf::Vector2f position0 = viewCenter - sf::Vector2f(32 * 7, 5 * 32);
+	position0.x = floorf(position0.x / 32.f) * 32.f;
+	position0.y = floorf(position0.y / 32.f) * 32.f;
+
+	// trying to do dual grid system
+	for (int x = 0; x < 15; x++) {
+		for (int y = 0; y < 10; y++) {
+			sf::Vector2f currentPosition = position0 + sf::Vector2f(x, y) * 32.f + sf::Vector2f(16, 16);
+			
+			// read neighbourg tiles
+			bool up_left = readTile(currentPosition) <= 10;
+			bool up_right = readTile(currentPosition + sf::Vector2f(32.f,0.f)) <= 10;
+			bool down_left = readTile(currentPosition + sf::Vector2f(0., 32.f)) <= 10;
+			bool down_right = readTile(currentPosition + sf::Vector2f(32.f, 32.f)) <= 10;
+			
+			//std::cout << "idx: " << x + y * 15 << " " << up_left << " " << up_right << " " << down_left << " " << down_right << "\n";
+			sf::IntRect toSelect = EMPTY;
+			if (up_left || up_right || down_left || down_right) {
+				if (up_left && up_right && down_left && down_right) toSelect = FULL;
+
+				else if (up_left && up_right && !down_left && !down_right) toSelect = DOWN;
+				else if (!up_left && !up_right && down_left && down_right) toSelect = UP;
+				else if (up_left && !up_right && down_left && !down_right) toSelect = RIGHT;
+				else if (!up_left && up_right && !down_left && down_right) toSelect = LEFT;
+
+				else if (!up_left && up_right && down_left && down_right) toSelect = CORNER_UP_LEFT;
+				else if (up_left && !up_right && down_left && down_right) toSelect = CORNER_UP_RIGHT;
+				else if (up_left && up_right && !down_left && down_right) toSelect = CORNER_DOWN_LEFT;
+				else if (up_left && up_right && down_left && !down_right) toSelect = CORNER_DOWN_RIGHT;
+
+				else if (up_left && !up_right && !down_left && !down_right) toSelect = DOWN_RIGHT;
+				else if (!up_left && up_right && !down_left && !down_right) toSelect = DOWN_LEFT;
+				else if (!up_left && !up_right && down_left && !down_right) toSelect = UP_RIGHT;
+				else if (!up_left && !up_right && !down_left && down_right) toSelect = UP_LEFT;
+
+				else if (!up_left && up_right && down_left && !down_right) toSelect = DIAGONAL_RIGHT_LEFT;
+				else if (up_left && !up_right && !down_left && down_right) toSelect = DIAGONAL_LEFT_RIGHT;
+
+
+				usedTileSet.draw(renderTex, currentPosition, toSelect);
+			}
+		}
+	}
 }
 
 // intersection, returns the minimal value from the position to the tilemap
@@ -141,6 +180,6 @@ sf::Vector2u game::tileMap::convertToMapPos(sf::Vector2f pos) const {
 
 	return sf::Vector2u(tilePos.x, tilePos.y);
 }
-int game::tileMap::convertToIndex(sf::Vector2f mapPos) const {
+int game::tileMap::convertToIndex(sf::Vector2u mapPos) const {
 	return (mapPos.x + mapPos.y * size.x) * 4;
 }

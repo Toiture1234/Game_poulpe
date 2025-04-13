@@ -35,6 +35,7 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 
 	// init tilemap
 	worldTilemap.loadtilemap("assets/textures/tilemap/test_tilemap.png");
+	worldTilemap.usedTileSet = tileSet(&textureAtlas.at(5), &textureAtlas.at(5));
 	std::cout << "Game initialisation done !!\n";
 }
 void game::gameClass::initTextures() {
@@ -45,6 +46,7 @@ void game::gameClass::initTextures() {
 	textureAtlas.push_back(sf::Texture("assets/textures/background.png")); // 2
 	textureAtlas.push_back(sf::Texture("assets/textures/objects/basic_sign.png")); // 3
 	textureAtlas.push_back(sf::Texture("assets/textures/misc/triangle_txt.png")); // 4
+	textureAtlas.push_back(sf::Texture("assets/textures/tilemap/tiles_v1.png")); // 5
 
 	// load fonts
 	fontAtlas.push_back(sf::Font("assets/font/minecraft-regular.ttf"));
@@ -61,9 +63,11 @@ void game::gameClass::initRenderTexContext() {
 
 // this function will become really big I guess
 void game::gameClass::onUpdate() {
-	gameRenderTexture.clear();
+	gameRenderTexture.clear(sf::Color::Blue);
 
-	// keep track of user input
+	sf::Vector2f centerPos = player.position + sf::Vector2f(16, -16);
+	centerPos.x = fminf(fmaxf(centerPos.x, 7 * 32), (WORLD_SIZE - 7) * 32);
+	centerPos.y = fminf(fmaxf(centerPos.y, 4 * 32), (WORLD_SIZE - 4) * 32);
 	
 	// game logic
 	if(!stopMovement) player.move(*deltaT_ptr, worldTilemap);
@@ -71,19 +75,12 @@ void game::gameClass::onUpdate() {
 	text_dspAtlas.at(0).onUpdate(player, stopMovement);
 
 	// update view
-	worldView.setCenter(player.position + sf::Vector2f(16, -16));
-	gameRenderTexture.setView(worldView);
 	
-	// drawing to render texture
-	// this would use a loop soon so I have to take care I which order I put my objects
-	// maybe I can make separated vectors for differents planes
-	//objectAtlas.at(1).draw(&gameRenderTexture, nullptr);
-	//objectAtlas.at(0).draw(&gameRenderTexture, nullptr);
+	worldView.setCenter(centerPos);
+	gameRenderTexture.setView(worldView);
 
-	worldTilemap.drawTilemap(&gameRenderTexture);
-
-	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr, player.position);
-
+	worldTilemap.drawTilemap(&gameRenderTexture, centerPos);
+	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr, centerPos);
 	player.draw(&gameRenderTexture, nullptr);
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {
