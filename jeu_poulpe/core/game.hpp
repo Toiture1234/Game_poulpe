@@ -16,7 +16,6 @@ namespace game {
 	private :
 		// objects vector
 		std::vector<sf::Texture> textureAtlas;
-		std::vector<sf::Shader> shaderAtlas;
 		std::vector<object> objectAtlas;
 
 		// text displayers
@@ -30,6 +29,9 @@ namespace game {
 
 		// font
 		std::vector<sf::Font> fontAtlas;
+		
+		// shaders
+		sf::Shader dark;
 
 		bool isOnPause; // stops every game logic
 		bool stopMovement;

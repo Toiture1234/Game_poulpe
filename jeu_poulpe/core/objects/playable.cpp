@@ -27,6 +27,9 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 	bool rightDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(1, 0)) == SOLID_0;
 	bool downDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(0, 1)) == SOLID_0;
 
+	int tileIdx = refTileMap.readTile(position + sf::Vector2f(16, 16));
+	bool isOnLadder = tileIdx == LADDER;
+
 	// final test booleans
 	bool up = upUL || upUR;
 	bool down = downDL || downDR;
@@ -41,13 +44,16 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 	// key inputs
 	if(canMove) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) {
-			baseAcceleration.y += -20.f * DEV_MODE;
+			baseAcceleration.y += -20.f * (DEV_MODE);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
 			baseAcceleration.x += 3 + 25 * touchingDown;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
 			baseAcceleration.x -= 3 + 25 * touchingDown;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && isOnLadder) {
+			baseAcceleration.y -= 20.f;
 		}
 	}
 
@@ -68,32 +74,33 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 	velocity += baseAcceleration * delta_time; // this works as long there is no single short events (like jumping)
 
 	// jump
-	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown;
+	bool isJumping = canMove && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && touchingDown && !isOnLadder;
 	if (isJumping) {
 		velocity.y = -170;
 		std::cout << "ONE JUMP ---------------------------------------------------------------------\n";
-	}
+	} 
 
 	// velocity change factor
 	if (touchingUp) { // we touch ceiling
-		std::cout << "Up touching\n";
+		//std::cout << "Up touching\n";
 		velocity.y *= velocity.dot(sf::Vector2f(0, 1)) > 0.f ? 1.f : 0.f;
 	}
 	if (touchingLeft) { // we touch left wall
-		std::cout << "Left touching\n";
+		//std::cout << "Left touching\n";
 		velocity.x *= velocity.dot(sf::Vector2f(1, 0)) > 0.f ? 1.f : 0.f;
 	}
 	if (touchingRight) { // we touch right wall
-		std::cout << "Right touching\n";
+		//std::cout << "Right touching\n";
 		velocity.x *= velocity.dot(sf::Vector2f(-1, 0)) > 0.f ? 1.f : 0.f;
 	}
 	if (touchingDown) { // we touch floor
-		std::cout << "Down touching\n";
+		//std::cout << "Down touching\n";
 		velocity.y *= velocity.dot(sf::Vector2f(0, -1)) > 0.f ? 1.f : 0.f;
 	}
 
 	// velocity clamping
 	velocity.x = fmaxf(-128, fminf(128, velocity.x));
+	if (isOnLadder) velocity.y = fmaxf(fminf(velocity.y, 64), -64);
 
 	position += velocity * delta_time;
 

@@ -50,12 +50,12 @@ void game::tileMap::drawTilemap(sf::RenderTexture* renderTex, sf::Vector2f viewC
 			sf::Vector2f currentPosition = position0 + sf::Vector2f(x, y) * 32.f + sf::Vector2f(16, 16);
 			
 			// read neighbourg tiles
-			bool up_left = readTile(currentPosition) <= 10;
-			bool up_right = readTile(currentPosition + sf::Vector2f(32.f,0.f)) <= 10;
-			bool down_left = readTile(currentPosition + sf::Vector2f(0., 32.f)) <= 10;
-			bool down_right = readTile(currentPosition + sf::Vector2f(32.f, 32.f)) <= 10;
+			bool up_left = readTile(currentPosition) == SOLID_0;
+			bool up_right = readTile(currentPosition + sf::Vector2f(32.f,0.f)) == SOLID_0;
+			bool down_left = readTile(currentPosition + sf::Vector2f(0., 32.f)) == SOLID_0;
+			bool down_right = readTile(currentPosition + sf::Vector2f(32.f, 32.f)) == SOLID_0;
 			
-			//std::cout << "idx: " << x + y * 15 << " " << up_left << " " << up_right << " " << down_left << " " << down_right << "\n";
+			// draw bare terrain
 			sf::IntRect toSelect = EMPTY;
 			if (up_left || up_right || down_left || down_right) {
 				if (up_left && up_right && down_left && down_right) toSelect = FULL;
@@ -80,6 +80,14 @@ void game::tileMap::drawTilemap(sf::RenderTexture* renderTex, sf::Vector2f viewC
 
 
 				usedTileSet.draw(renderTex, currentPosition, toSelect);
+			} 
+			{ // draw another type of decor
+				// read the direct tile --> do not use offset grid based system
+				currentPosition = currentPosition - sf::Vector2f(16, 16);
+
+				int tileIdx = readTile(currentPosition);
+
+				if (tileIdx == LADDER) usedTileSet.draw(renderTex, currentPosition, LADDER_);
 			}
 		}
 	}

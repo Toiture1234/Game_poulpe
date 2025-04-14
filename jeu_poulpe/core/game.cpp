@@ -46,13 +46,20 @@ void game::gameClass::initTextures() {
 	textureAtlas.push_back(sf::Texture("assets/textures/background.png")); // 2
 	textureAtlas.push_back(sf::Texture("assets/textures/objects/basic_sign.png")); // 3
 	textureAtlas.push_back(sf::Texture("assets/textures/misc/triangle_txt.png")); // 4
-	textureAtlas.push_back(sf::Texture("assets/textures/tilemap/tiles_v1.png")); // 5
+	textureAtlas.push_back(sf::Texture("assets/textures/tilemap/tiles_v0.png")); // 5
 
 	// load fonts
 	fontAtlas.push_back(sf::Font("assets/font/minecraft-regular.ttf"));
 }
 void game::gameClass::initShaders() {
+	if (!sf::Shader::isAvailable()) {
+		std::cout << "ERROR -- SHADERS AREN'T AVAILABLE\n";
+		return;
+	}
 
+	dark.loadFromFile("assets/shaders/VertexShader.glsl", "assets/shaders/FragmentShader.glsl");
+	dark.setUniform("texture", sf::Shader::CurrentTexture);
+	dark.setUniform("playerPosition", player.position);
 }
 void game::gameClass::initRenderTexContext() {
 	if (!gameRenderTexture.resize(sf::Vector2u(*windowW_ptr, *windowH_ptr))) {
@@ -71,6 +78,7 @@ void game::gameClass::onUpdate() {
 	
 	// game logic
 	if(!stopMovement) player.move(*deltaT_ptr, worldTilemap);
+	dark.setUniform("playerPosition", player.position - centerPos);
 
 	text_dspAtlas.at(0).onUpdate(player, stopMovement);
 
@@ -88,5 +96,5 @@ void game::gameClass::drawToWindow(sf::RenderWindow* window) {
 
 	// copy to a sprite to render to window, todo : create the sprite once and reuse it
 	sf::Sprite drawer(gameRenderTexture.getTexture());
-	window->draw(drawer);
+	window->draw(drawer, &dark);
 }

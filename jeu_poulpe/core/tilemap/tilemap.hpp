@@ -11,8 +11,11 @@
 #define MAX_STEPS 50
 #define EPSILON 0.5f
 
+// define type of blocks
+#define SOLID_0 0
+#define LADDER 1
 
-// boring thing to do
+// this gives the position of each kind of block in the tileset image
 #define UP {{96, 0}, {32, 32}}
 #define LEFT {{32, 0}, { 32, 32}}
 #define RIGHT {{96, 64}, { 32, 32}}
@@ -33,8 +36,7 @@
 #define FULL {{64, 32}, {32, 32}}
 #define EMPTY {{0, 96}, { 32, 32}}
 
-// define type of blocks
-#define SOLID_0 0
+#define LADDER_ {{129, 0}, {30, 32}}
 
 namespace game {
 
