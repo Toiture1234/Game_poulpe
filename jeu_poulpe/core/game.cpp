@@ -12,17 +12,14 @@ void game::gameClass::init(float* dtPtr, float* rtPtr, unsigned int* wW, unsigne
 	initRenderTexContext();
 
 	// init objects
-	objectAtlas.push_back(object(&textureAtlas.at(NULLTEX_WHITE), &textureAtlas.at(NULLTEX_WHITE)));
-	objectAtlas.at(0).setPosition(sf::Vector2f(0, 50));
-	objectAtlas.push_back(object(&textureAtlas.at(STARS_BKG), &textureAtlas.at(STARS_BKG)));
+	// we don't have any objects now so...
 
 	// init text displayers
 	text_dspAtlas.push_back(textDiplayer(&textureAtlas.at(SIGN), &textureAtlas.at(SIGN)));
 	text_dspAtlas.at(0).position = sf::Vector2f(5 * TILE_SIZE, 4 * TILE_SIZE);
 	text_dspAtlas.at(0).littleTriangle = new object(&textureAtlas.at(SIGN_TRIANGLE), &textureAtlas.at(SIGN_TRIANGLE));
 	text_dspAtlas.at(0).drawingText = new sf::Text(fontAtlas.at(0));
-	text_dspAtlas.at(0).setText("Hello, welcome in my game !! Press Escape \nto exit :)");
-	
+	text_dspAtlas.at(0).setText("Hello, welcome in my game !! Press Escape to exit \n:)");
 
 	// init player better this way so the player is not dependent to an object
 	player = playable(&textureAtlas.at(NULLTEX), &textureAtlas.at(NULLTEX));
@@ -57,44 +54,65 @@ void game::gameClass::initShaders() {
 		return;
 	}
 
-	dark.loadFromFile("assets/shaders/VertexShader.glsl", "assets/shaders/FragmentShader.glsl");
+	if (!dark.loadFromFile("assets/shaders/VertexShader.glsl", "assets/shaders/FragmentShader.glsl")) std::cout << "FAILED TO LOAD SHADER\n";
 	dark.setUniform("texture", sf::Shader::CurrentTexture);
-	dark.setUniform("playerPosition", player.position);
+	dark.setUniform("offset", sf::Vector2f(0.f, 0.f));
+	dark.setUniform("w_resolution", sf::Vector2f(*windowW_ptr, *windowH_ptr));
 }
 void game::gameClass::initRenderTexContext() {
 	if (!gameRenderTexture.resize(sf::Vector2u(*windowW_ptr, *windowH_ptr))) {
 		std::cout << "Failed to resize renderTex !!\n"; // a bit of debugging :)
 	}
 	gameRenderTexture.setView(worldView);
+
+	if (!GUI_renderTexture.resize(sf::Vector2u(*windowW_ptr, *windowH_ptr))) {
+		std::cout << "Failed to resize renderTex !!\n"; // a bit of debugging :)
+	}
 }
 
 // this function will become really big I guess
 void game::gameClass::onUpdate() {
 	gameRenderTexture.clear(sf::Color::Blue);
+	GUI_renderTexture.clear();
 
 	sf::Vector2f centerPos = player.position + sf::Vector2f(16, -16);
 	centerPos.x = fminf(fmaxf(centerPos.x, 7 * 32), (WORLD_SIZE - 7) * 32);
 	centerPos.y = fminf(fmaxf(centerPos.y, 4 * 32), (WORLD_SIZE - 4) * 32);
+
+	// have to calculate the offset between player position and camera position
+	sf::Vector2f difference = centerPos - player.position;
+	difference.x /= view_width;
+	difference.y /= view_height;
+	std::cout << difference.x << " " << difference.y << "\n";
 	
 	// game logic
 	if(!stopMovement) player.move(*deltaT_ptr, worldTilemap);
-	dark.setUniform("playerPosition", player.position - centerPos);
+	dark.setUniform("offset", difference);
 
 	text_dspAtlas.at(0).onUpdate(player, stopMovement);
 
 	// update view
-	
 	worldView.setCenter(centerPos);
 	gameRenderTexture.setView(worldView);
 
+	// drawing, phase 1
 	worldTilemap.drawTilemap(&gameRenderTexture, centerPos);
-	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr, centerPos);
+	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr, centerPos, 0);
 	player.draw(&gameRenderTexture, nullptr);
+
+	// draw to GUI renderTexture
+	gameRenderTexture.display();
+	sf::Sprite drawer(gameRenderTexture.getTexture());
+	GUI_renderTexture.draw(drawer, &dark);
+
+	// draw GUI, drawing phase 2
+	text_dspAtlas.at(0).draw(&GUI_renderTexture, *runT_ptr, sf::Vector2f(*windowW_ptr * 0.5f, *windowH_ptr * 0.5f), 1);
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {
-	gameRenderTexture.display();
+	GUI_renderTexture.display();
 
 	// copy to a sprite to render to window, todo : create the sprite once and reuse it
-	sf::Sprite drawer(gameRenderTexture.getTexture());
-	window->draw(drawer, &dark);
+	sf::Sprite drawer(GUI_renderTexture.getTexture());
+	// apply global shader
+	window->draw(drawer);
 }

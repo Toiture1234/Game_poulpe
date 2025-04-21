@@ -68,7 +68,7 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 
 	// friction force of medium we're on
 	if (touchingDown)
-		baseAcceleration += -velocity * 8.f;
+		baseAcceleration += -velocity * 8.f / mass;
 
 	// velocity change
 	velocity += baseAcceleration * delta_time; // this works as long there is no single short events (like jumping)
