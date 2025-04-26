@@ -53,7 +53,7 @@ namespace game {
 
 		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr);
 		void move(float delta_time, tileMap& refTileMap);
-		void draw(sf::RenderTexture* renderTex, sf::Shader* shader);
+		void draw(renderingObject* renderTex, sf::Shader* shader);
 
 		sf::Vector2f* getPosition_ptr() const { return (sf::Vector2f*)&position; };
 		sf::Vector2f getVelocity() const { return velocity; };

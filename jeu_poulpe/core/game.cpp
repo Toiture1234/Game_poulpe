@@ -60,10 +60,10 @@ void game::gameClass::initShaders() {
 	dark.setUniform("w_resolution", sf::Vector2f(*windowW_ptr, *windowH_ptr));
 }
 void game::gameClass::initRenderTexContext() {
-	if (!gameRenderTexture.resize(sf::Vector2u(*windowW_ptr, *windowH_ptr))) {
+	if (!gameRenderingObject.resize(sf::Vector2u(*windowW_ptr, *windowH_ptr))) {
 		std::cout << "Failed to resize renderTex !!\n"; // a bit of debugging :)
 	}
-	gameRenderTexture.setView(worldView);
+	gameRenderingObject.setView(worldView);
 
 	if (!GUI_renderTexture.resize(sf::Vector2u(*windowW_ptr, *windowH_ptr))) {
 		std::cout << "Failed to resize renderTex !!\n"; // a bit of debugging :)
@@ -72,8 +72,8 @@ void game::gameClass::initRenderTexContext() {
 
 // this function will become really big I guess
 void game::gameClass::onUpdate() {
-	gameRenderTexture.clear(sf::Color::Blue);
-	GUI_renderTexture.clear();
+	gameRenderingObject.clear(sf::Color::Blue, sf::Color::Black, sf::Color::Black);
+	GUI_renderTexture.clear(sf::Color::Black, sf::Color::Black, sf::Color::Black);
 
 	sf::Vector2f centerPos = player.position + sf::Vector2f(16, -16);
 	centerPos.x = fminf(fmaxf(centerPos.x, 7 * 32), (WORLD_SIZE - 7) * 32);
@@ -93,26 +93,26 @@ void game::gameClass::onUpdate() {
 
 	// update view
 	worldView.setCenter(centerPos);
-	gameRenderTexture.setView(worldView);
+	gameRenderingObject.setView(worldView);
 
 	// drawing, phase 1
-	worldTilemap.drawTilemap(&gameRenderTexture, centerPos);
-	text_dspAtlas.at(0).draw(&gameRenderTexture, *runT_ptr, centerPos, 0);
-	player.draw(&gameRenderTexture, nullptr);
+	worldTilemap.drawTilemap(&gameRenderingObject, centerPos);
+	text_dspAtlas.at(0).draw(&gameRenderingObject, *runT_ptr, centerPos, 0);
+	player.draw(&gameRenderingObject, nullptr);
 
 	// draw to GUI renderTexture
-	gameRenderTexture.display();
-	sf::Sprite drawer(gameRenderTexture.getTexture());
-	GUI_renderTexture.draw(drawer, &dark);
+	gameRenderingObject.albedoTexture.display();
+	sf::Sprite drawer(gameRenderingObject.albedoTexture.getTexture());
+	GUI_renderTexture.albedoTexture.draw(drawer, &dark);
 
 	// draw GUI, drawing phase 2
 	text_dspAtlas.at(0).draw(&GUI_renderTexture, *runT_ptr, sf::Vector2f(*windowW_ptr * 0.5f, *windowH_ptr * 0.5f), 1);
 }
 void game::gameClass::drawToWindow(sf::RenderWindow* window) {
-	GUI_renderTexture.display();
+	GUI_renderTexture.albedoTexture.display();
 
 	// copy to a sprite to render to window, todo : create the sprite once and reuse it
-	sf::Sprite drawer(GUI_renderTexture.getTexture());
+	sf::Sprite drawer(GUI_renderTexture.albedoTexture.getTexture());
 	// apply global shader
 	window->draw(drawer);
 }

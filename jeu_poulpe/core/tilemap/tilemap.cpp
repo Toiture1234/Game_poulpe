@@ -37,7 +37,7 @@ void game::tileMap::loadtilemap(std::string path) {
 	pixelArray = tiles_img.getPixelsPtr();
 }
 
-void game::tileMap::drawTilemap(sf::RenderTexture* renderTex, sf::Vector2f viewCenter) {
+void game::tileMap::drawTilemap(renderingObject* renderTex, sf::Vector2f viewCenter) {
 
 	// 7 for x and 5 for y 
 	sf::Vector2f position0 = viewCenter - sf::Vector2f(32 * 7, 5 * 32);
@@ -190,4 +190,8 @@ sf::Vector2u game::tileMap::convertToMapPos(sf::Vector2f pos) const {
 }
 int game::tileMap::convertToIndex(sf::Vector2u mapPos) const {
 	return (mapPos.x + mapPos.y * size.x) * 4;
+}
+
+bool game::tileMap::isSolid(int tileIDX) const {
+	return tileIDX == SOLID_0;
 }

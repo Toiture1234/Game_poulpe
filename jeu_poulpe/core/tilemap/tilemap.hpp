@@ -54,7 +54,7 @@ namespace game {
 			objRef = new object(albedo, normal);
 		}
 
-		inline void draw(sf::RenderTexture* renderTex, sf::Vector2f position, sf::IntRect toSelect) {
+		inline void draw(renderingObject* renderTex, sf::Vector2f position, sf::IntRect toSelect) {
 			objRef->albedoSP.setTextureRect(toSelect);
 			objRef->setPosition(position);
 			objRef->draw(renderTex, nullptr);
@@ -86,12 +86,14 @@ namespace game {
 		~tileMap() {}
 
 		void loadtilemap(std::string path);
-		void drawTilemap(sf::RenderTexture* renderTex, sf::Vector2f viewCenter);
+		void drawTilemap(renderingObject* renderTex, sf::Vector2f viewCenter);
 
 		int readTile(sf::Vector2f pos) const;
 		int readTileDirect(sf::Vector2u pos) const;
 		sf::Vector2u convertToMapPos(sf::Vector2f pos) const ;
 		int convertToIndex(sf::Vector2u mapPos) const;
+
+		bool isSolid(int tileIDX) const;
 
 		float intersect(sf::Vector2f pos, sf::Vector2f normDir, sf::Vector2f& normal); // obsolete
 		bool traceRay(sf::Vector2f start, sf::Vector2f end, float& time, sf::Vector2f& normal);

@@ -4,6 +4,20 @@
 #include <iostream>
 
 namespace game {
+	// drawing handle class
+	class renderingObject {
+	public:
+		sf::RenderTexture albedoTexture;
+		sf::RenderTexture normalTexture;
+		sf::RenderTexture depthTexture; // actually has info about material properties like roughness, emmisive (albedo color), BRDF response, etc
+
+		bool resize(sf::Vector2u size);
+
+		void setView(sf::View& view);
+
+		void clear(sf::Color clearColor0, sf::Color clearColor1, sf::Color clearColor2);
+	};
+
 	class object {
 	public:
 		// pbr variables, public for ease of access
@@ -20,7 +34,7 @@ namespace game {
 			roughness = 1.f;
 		}
 
-		void draw(sf::RenderTexture* renderTex, sf::Shader* shaderUsed);
+		void draw(renderingObject* renderTex, sf::Shader* shaderUsed);
 		void setTextures(sf::Texture* albedo_ptr, sf::Texture* normal_ptr);
 		void setPosition(sf::Vector2f position);
 

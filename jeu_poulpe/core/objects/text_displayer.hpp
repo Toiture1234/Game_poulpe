@@ -37,7 +37,7 @@ namespace game {
 		
 		void setText(std::string txt);
 		void onUpdate(playable& player, bool& stopMvmt);
-		void draw(sf::RenderTexture* renderTex, float runTime, sf::Vector2f playerPos, int stage); // stage 0 is the sign on tilemap, stage 1 is dialogue box
+		void draw(renderingObject* renderTex, float runTime, sf::Vector2f playerPos, int stage); // stage 0 is the sign on tilemap, stage 1 is dialogue box
 
 		sf::Vector2f position;
 		object* littleTriangle;

@@ -35,7 +35,7 @@ void game::textDiplayer::onUpdate(playable& player, bool& stopMvmt)
 }
 
 // note that playerPos is the position of the center of the screen
-void game::textDiplayer::draw(sf::RenderTexture* renderTex, float runTime, sf::Vector2f playerPos, int stage) {
+void game::textDiplayer::draw(renderingObject* renderTex, float runTime, sf::Vector2f playerPos, int stage) {
 	if (stage == 0) {
 		objRef->draw(renderTex, nullptr);
 
@@ -65,15 +65,15 @@ void game::textDiplayer::draw(sf::RenderTexture* renderTex, float runTime, sf::V
 			sf::RectangleShape box({ 640, 240 });
 			box.setPosition({ 320, 240 - y});
 			box.setFillColor(sf::Color::White);
-			renderTex->draw(box);
+			renderTex->albedoTexture.draw(box);
 
 			box.setSize({ 630, 230 });
 			box.setPosition({ 325, 245 - y});
 			box.setFillColor(sf::Color::Black);
-			renderTex->draw(box);
+			renderTex->albedoTexture.draw(box);
 
 			drawingText->setPosition({ 330, 250 - y });
-			renderTex->draw(*drawingText);
+			renderTex->albedoTexture.draw(*drawingText);
 		}
 	}
 }

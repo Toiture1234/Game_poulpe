@@ -18,14 +18,14 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 	sf::Vector2u tileDR = refTileMap.convertToMapPos(position + sf::Vector2f(31, 31));
 
 	// 8 values
-	bool leftUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(1, 0)) == SOLID_0;
-	bool upUL = refTileMap.readTileDirect(tileUL - sf::Vector2u(0, 1)) == SOLID_0;
-	bool rightUR = refTileMap.readTileDirect(tileUR + sf::Vector2u(1, 0)) == SOLID_0;
-	bool upUR = refTileMap.readTileDirect(tileUR - sf::Vector2u(0, 1)) == SOLID_0;
-	bool leftDL = refTileMap.readTileDirect(tileDL - sf::Vector2u(1, 0)) == SOLID_0;
-	bool downDL = refTileMap.readTileDirect(tileDL + sf::Vector2u(0, 1)) == SOLID_0;
-	bool rightDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(1, 0)) == SOLID_0;
-	bool downDR = refTileMap.readTileDirect(tileDR + sf::Vector2u(0, 1)) == SOLID_0;
+	bool leftUL = refTileMap.isSolid(refTileMap.readTileDirect(tileUL - sf::Vector2u(1, 0)));
+	bool upUL = refTileMap.isSolid(refTileMap.readTileDirect(tileUL - sf::Vector2u(0, 1)));
+	bool rightUR = refTileMap.isSolid(refTileMap.readTileDirect(tileUR + sf::Vector2u(1, 0)));
+	bool upUR = refTileMap.isSolid(refTileMap.readTileDirect(tileUR - sf::Vector2u(0, 1)));
+	bool leftDL = refTileMap.isSolid(refTileMap.readTileDirect(tileDL - sf::Vector2u(1, 0)));
+	bool downDL = refTileMap.isSolid(refTileMap.readTileDirect(tileDL + sf::Vector2u(0, 1)));
+	bool rightDR = refTileMap.isSolid(refTileMap.readTileDirect(tileDR + sf::Vector2u(1, 0)));
+	bool downDR = refTileMap.isSolid(refTileMap.readTileDirect(tileDR + sf::Vector2u(0, 1)));
 
 	int tileIdx = refTileMap.readTile(position + sf::Vector2f(16, 16));
 	bool isOnLadder = tileIdx == LADDER;
@@ -113,6 +113,6 @@ void game::playable::move(float delta_time, tileMap& refTileMap)
 
 	objRef->setPosition(position);
 }
-void game::playable::draw(sf::RenderTexture* renderTex, sf::Shader* shader) {
+void game::playable::draw(renderingObject* renderTex, sf::Shader* shader) {
 	objRef->draw(renderTex, shader);
 }

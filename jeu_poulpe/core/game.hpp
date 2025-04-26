@@ -54,8 +54,8 @@ namespace game {
 		sf::View worldView;
 
 		// rendering, the game renders on a virtual screen that would later be displayed on window
-		sf::RenderTexture gameRenderTexture; // draw the world without GUI
-		sf::RenderTexture GUI_renderTexture; // draw everything
+		renderingObject gameRenderingObject; // draw the world without GUI
+		renderingObject GUI_renderTexture; // draw everything
 	public:
 		gameClass() {
 			isOnPause = false;
